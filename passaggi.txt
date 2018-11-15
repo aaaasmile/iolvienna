@@ -1,0 +1,2 @@
+todo:
+Aggiungi la view che vien da un template statico per l'app di react
