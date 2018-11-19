@@ -1,2 +1,13 @@
 todo:
 Aggiungi la view che vien da un template statico per l'app di react
+
+== SQLITE3 e golang
+Il modulo fts5 non  funziona di default, come si fa ad averlo?
+Si usa questa command line:
+go run --tags "fts5" .\main.go
+e per il build:
+go build --tags "fts5" .\main.go
+
+== Testa la api del service
+Apri una WLC e lancia:
+curl -X POST http://localhost:5568/iol/do?req=oca

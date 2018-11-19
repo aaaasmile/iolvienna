@@ -12,6 +12,8 @@ import (
 	"time"
 
 	"../conf"
+	"../db"
+	"./iol"
 )
 
 func RunService(configfile string) {
@@ -19,6 +21,7 @@ func RunService(configfile string) {
 	conf.ReadConfig(configfile)
 	log.Println("Configuration is read")
 
+	db.OpenDatabase()
 	var wait time.Duration
 	serverurl := conf.Current.ServiceURL
 	iolServURL := fmt.Sprintf("http://%s%s", strings.Replace(serverurl, "0.0.0.0", "localhost", 1), conf.Current.RootUrlPattern)
@@ -27,7 +30,7 @@ func RunService(configfile string) {
 	log.Println("Try this url: ", iolServURL)
 
 	http.Handle(conf.Current.RootUrlPattern+"static/", http.StripPrefix(conf.Current.RootUrlPattern+"static", http.FileServer(http.Dir("static"))))
-	//http.HandleFunc(conf.Current.RootUrlPattern, modix.HandleFastCalculation)
+	http.HandleFunc(conf.Current.RootUrlPattern, iol.IolAPiHandler)
 
 	srv := &http.Server{
 		Addr: serverurl,
