@@ -33,3 +33,15 @@ EXPLAIN QUERY PLAN select date_published,id, post_content from iol_post where da
 
 Qeullo che si diceva 10 anni fa:
 select date_published,id from iol_post where date_published > '2008-11-20T00:10:00.000Z' AND date_published < '2008-11-20T23:59:00.000Z' ORDER BY date_published  LIMIT(100) ;
+
+== Deployment su hetz
+Copiato il db in ~/app/go/iol-service/db
+Ora ho fatto il checkout della repository in ~/app/go/iol-service/ con:
+git clone https://github.com/aaaasmile/iolvienna.git
+cd iolvienna
+Qui posso aggiornare la repository con git pull. Una volta pronto per la nuova versione, uso:
+go build --tags "fts5"
+Poi sposto il file iolvienna in ../iolvienna.bin. Non dimenticare la dir static e il config.toml
+Ora il service è pronto per essere usato dietro ad un nginx (vedi readme_Hetzner.txt).
+~/app/go/iol-service/iolvienna.bin
+
