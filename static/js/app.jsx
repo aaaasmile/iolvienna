@@ -1,6 +1,8 @@
 class App extends React.Component {
   render() {
-    <p>Wow this is a APP!!</p>
+    return (
+      <p>Wow this is a APP!!</p>
+    )
   }
 }
 
