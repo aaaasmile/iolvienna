@@ -31,7 +31,7 @@ func OpenDatabase() {
 }
 
 func MatchText(textMatch string) (*IolPostResp, error) {
-	q := `SELECT rowid from playsearch WHERE text MATCH ?;`
+	q := `SELECT playsrowid from playsearch WHERE text MATCH ?;`
 
 	rows, err := connDb.Query(q, textMatch)
 	if err != nil {

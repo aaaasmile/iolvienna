@@ -1,5 +1,6 @@
 todo:
-Aggiungi la view che vien da un template statico per l'app di react
+Aggiungi la view che vien da un template statico per l'app di react.
+Come punto di partenza guarda: https://hakaselogs.me/2018-04-20/building-a-web-app-with-go-gin-and-react/
 
 == SQLITE3 e golang
 Il modulo fts5 non  funziona di default, come si fa ad averlo?
@@ -11,3 +12,24 @@ go build --tags "fts5" .\main.go
 == Testa la api del service
 Apri una WLC e lancia:
 curl -X POST http://localhost:5568/iol/do?req=oca
+
+== SQL
+select rowid,text from playsearch where text MATCH "oca"
+
+Poi eseguo la query con i campi di iol_post
+select user_name, date_published from playsearch inner join iol_post ON playsearch.playsrowid = iol_post.rowid where playsearch.text MATCH "oca";
+
+Per verdere chi ha scritto più post (primi 20), si usa:
+select count(id) as thecount, user_name from iol_post group by user_name ORDER BY thecount DESC LIMIT 20;
+
+Per avere i 10 post seguenti ad una data si usa:
+select date_published,id, post_content from iol_post where date_published > '2003-10-31T15:10:00.000Z' ORDER BY date_published  LIMIT(10) ;
+Da notare che se si usa > id o post_id non funziona in quanto non hanno una struttura fissa come la data.
+Per questa funzione ho creato un indice:
+CREATE INDEX idx_iolpost_pubdate ON iol_post(date_published);
+Che viene usato nella select di prima:
+EXPLAIN QUERY PLAN select date_published,id, post_content from iol_post where date_published > '2003-10-31T15:10:00.000Z' ORDER BY date_published  LIMIT(10) ;
+--SEARCH TABLE iol_post USING COVERING INDEX idx_iolpost_pubdate (date_published>?)
+
+Qeullo che si diceva 10 anni fa:
+select date_published,id from iol_post where date_published > '2008-11-20T00:10:00.000Z' AND date_published < '2008-11-20T23:59:00.000Z' ORDER BY date_published  LIMIT(100) ;
