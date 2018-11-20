@@ -10,22 +10,24 @@
   <script type="application/javascript" src="https://unpkg.com/react@16.0.0/umd/react.production.min.js"></script>
   <script type="application/javascript" src="https://unpkg.com/react-dom@16.0.0/umd/react-dom.production.min.js"></script>
   <script type="application/javascript" src="https://unpkg.com/babel-standalone@6.26.0/babel.js"></script>
-  <script type="text/babel" src="js/app.jsx"></script>
+  <script type="text/babel" src="{{.RootUrl}}static/js/app.jsx"></script>
   <link rel="stylesheet" href="{{.RootUrl}}static/css/semantic.css">
 </head>
 
 <body>
-  <div id="app"></div>
-  <div class="ui vertical footer segment">
-    <div class="ui container">
-      <div class="ui stackable  divided equal ten stackable grid">
-        <div class="five wide column">
-          <h4 class="ui header">Version</h4>
-          <p>Software build {{.Buildnr}}</p>
-        </div>
-        <div class="seven wide column">
-          <h4 class="ui header">Info</h4>
-          <p><i class="copyright icon"></i> 2018 by Invido.it</p>
+  <div class="ui container">
+    <div id="app"></div>
+    <div class="ui vertical footer segment">
+      <div class="ui container">
+        <div class="ui stackable  divided equal ten stackable grid">
+          <div class="five wide column">
+            <h4 class="ui header">Version</h4>
+            <p>Software build {{.Buildnr}}</p>
+          </div>
+          <div class="seven wide column">
+            <h4 class="ui header">Info</h4>
+            <p><i class="copyright icon"></i> 2018 by Invido.it</p>
+          </div>
         </div>
       </div>
     </div>

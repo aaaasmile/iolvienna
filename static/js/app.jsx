@@ -1,0 +1,7 @@
+class App extends React.Component {
+  render() {
+    <p>Wow this is a APP!!</p>
+  }
+}
+
+ReactDOM.render(<App />, document.getElementById('app'));
