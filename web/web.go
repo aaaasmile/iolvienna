@@ -24,13 +24,13 @@ func RunService(configfile string) {
 	db.OpenDatabase()
 	var wait time.Duration
 	serverurl := conf.Current.ServiceURL
-	iolServURL := fmt.Sprintf("http://%s%s", strings.Replace(serverurl, "0.0.0.0", "localhost", 1), conf.Current.RootUrlPattern)
+	iolServURL := fmt.Sprintf("http://%s%s", strings.Replace(serverurl, "0.0.0.0", "localhost", 1), conf.Current.RootURLPattern)
 	iolServURL = strings.Replace(iolServURL, "127.0.0.1", "localhost", 1)
-	log.Println("Server started with URL %s", serverurl)
+	log.Println("Server started with URL ", serverurl)
 	log.Println("Try this url: ", iolServURL)
 
-	http.Handle(conf.Current.RootUrlPattern+"static/", http.StripPrefix(conf.Current.RootUrlPattern+"static", http.FileServer(http.Dir("static"))))
-	http.HandleFunc(conf.Current.RootUrlPattern, iol.IolAPiHandler)
+	http.Handle(conf.Current.RootURLPattern+"static/", http.StripPrefix(conf.Current.RootURLPattern+"static", http.FileServer(http.Dir("static"))))
+	http.HandleFunc(conf.Current.RootURLPattern, iol.IolAPiHandler)
 
 	srv := &http.Server{
 		Addr: serverurl,

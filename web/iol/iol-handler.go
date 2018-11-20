@@ -7,8 +7,11 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"text/template"
 
+	"../../conf"
 	"../../db"
+	"../idl"
 )
 
 func checkDoRquest(reqURI string) bool {
@@ -20,6 +23,8 @@ func checkDoRquest(reqURI string) bool {
 
 func IolAPiHandler(w http.ResponseWriter, req *http.Request) {
 	switch req.Method {
+	case "GET":
+		handleIndexGet(w, req)
 	case "POST":
 		log.Println("POST iol", req.RequestURI)
 		u, err := url.Parse(req.RequestURI)
@@ -39,6 +44,30 @@ func IolAPiHandler(w http.ResponseWriter, req *http.Request) {
 			log.Println("DO requested", val)
 			doSearchPlainText(w, req, val[0])
 		}
+	}
+}
+
+var (
+	tmplIndex *template.Template
+)
+
+type PageCtx struct {
+	Buildnr string
+	RootUrl string
+}
+
+func handleIndexGet(w http.ResponseWriter, req *http.Request) {
+	pagectx := PageCtx{
+		RootUrl: conf.Current.RootURLPattern,
+		Buildnr: idl.Buildnr,
+	}
+	if tmplIndex == nil || conf.Current.AlwaysReloadTempl {
+		log.Println("Load the template, reload on request is ", conf.Current.AlwaysReloadTempl)
+		tmplIndex = template.Must(template.New("AppIndex").ParseFiles("templates/index.html"))
+	}
+	err := tmplIndex.ExecuteTemplate(w, "base", pagectx)
+	if err != nil {
+		log.Fatal(err)
 	}
 }
 

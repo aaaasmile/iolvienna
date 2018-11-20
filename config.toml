@@ -1,2 +1,3 @@
 ServiceURL =  "127.0.0.1:5568"
-RootUrlPattern = "/iol/"
+RootURLPattern = "/iol/"
+AlwaysReloadTempl = true
