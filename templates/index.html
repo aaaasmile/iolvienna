@@ -9,18 +9,19 @@
   <script src="https://cdn.auth0.com/js/auth0/9.0/auth0.min.js"></script> -->
   
   <!-- Production react-->
-  <script type="application/javascript" src="https://unpkg.com/react@16.0.0/umd/react.production.min.js"></script>
-  <script type="application/javascript" src="https://unpkg.com/react-dom@16.0.0/umd/react-dom.production.min.js"></script>
+  <!-- <script type="application/javascript" src="https://unpkg.com/react@16.0.0/umd/react.production.min.js"></script>
+  <script type="application/javascript" src="https://unpkg.com/react-dom@16.0.0/umd/react-dom.production.min.js"></script> -->
  
   <!-- dev react -->
- <!-- <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
-  <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
-  -->
+ <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+ <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+ 
 
   <!-- Standalone babel, should not be used in prod. Use the compiler instead-->
-  <script type="application/javascript" src="https://unpkg.com/babel-standalone@6.26.0/babel.js"></script> 
+  <!-- <script type="application/javascript" src="https://unpkg.com/babel-standalone@6.26.0/babel.js"></script> 
+  <script type="text/babel" src="{{.RootUrl}}static/js/app.jsx"></script> -->
   
-  <script type="text/babel" src="{{.RootUrl}}static/js/app.jsx"></script>
+
   <link rel="stylesheet" href="{{.RootUrl}}static/css/semantic.css">
 </head>
 
@@ -43,6 +44,7 @@
     </div>
   </div>
 </body>
-
+<!-- compiled app -->
+<!-- <script src="{{.RootUrl}}static/dist/app.js"></script> -->
 </html>
 {{end}}

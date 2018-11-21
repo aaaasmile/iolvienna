@@ -45,3 +45,18 @@ Poi sposto il file iolvienna in ../iolvienna.bin. Non dimenticare la dir static 
 Ora il service è pronto per essere usato dietro ad un nginx (vedi readme_Hetzner.txt).
 ~/app/go/iol-service/iolvienna.bin
 
+== React
+Ho usato index.html come contenitore del mio client sviluppato in react. Index.html l'ho messo come template
+per avere la possibilità di gestire del codice via server. Quindi l'app in jsx va a finire sotto la dir
+static/js. Babel non va incluso in prod nel file index, ma prima va compilato il file jsx usando per esempio
+babel-cli. Come? Sono andato nella dir ../node (D:\scratch\go-lang\iol-vienna\node) ed ho installato babel-cli:
+npm install @babel-cli @babel-core 
+e tutta una serie di react e babel con la chicocciola. Solo quelli con la chiocciola hanno funzionato (babel ver 0.7).
+Guarda il file ../node/package.json per vedere quello che è stato installato e come funziona il comando build.
+Ora posso usare 
+npm run build
+Il file .babelrc non serve in quanto uso la cli direttamente dal file package.json.
+Il quale esamina la dir static/js e compila in static/dist.
+Con il file compilato è possibile rimovere babel da index.html ed usare app.js alla fine del body in index.html.
+
+
