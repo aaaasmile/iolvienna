@@ -54,7 +54,7 @@ npm install @babel-cli @babel-core
 e tutta una serie di react e babel con la chicocciola. Solo quelli con la chiocciola hanno funzionato (babel ver 0.7).
 Guarda il file ../node/package.json per vedere quello che è stato installato e come funziona il comando build.
 Ora posso usare 
-npm run build
+PS D:\scratch\go-lang\iol-vienna\node> npm run build
 Il file .babelrc non serve in quanto uso la cli direttamente dal file package.json.
 Il quale esamina la dir static/js e compila in static/dist.
 Con il file compilato è possibile rimovere babel da index.html ed usare app.js alla fine del body in index.html.
