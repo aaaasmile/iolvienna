@@ -2,8 +2,8 @@ package db
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
+	"math"
 	"math/rand"
 	"time"
 
@@ -53,32 +53,37 @@ func MatchText(textMatch string) (*IolPostResp, error) {
 		ids = append(ids, rowid)
 	}
 	if len(ids) > 0 {
-		log.Printf("Found ids: %v (len %d)", ids, len(ids))
+		//log.Printf("Found ids: %v (len %d)", ids, len(ids))
 		shuffle(ids)
-		log.Printf("After shuffle ids: %v (len %d)", ids, len(ids))
-		maxItems := len(ids)
-		for i := 0; i < maxItems; i++ {
-			selected := ids[i]
-			qs := `SELECT user_name, date_published, post_content FROM iol_post WHERE rowid = ?;`
-			fmt.Println(qs, selected)
-			row := connDb.QueryRow(qs, selected)
-			var userName, datePublished, postContent string
-			switch err := row.Scan(&userName, &datePublished, &postContent); err {
-			case sql.ErrNoRows:
-				log.Println("No rows were returned!")
-			case nil:
-				fmt.Println(userName, datePublished, postContent)
-				post := IolPost{
-					UserName: userName,
-					Date:     datePublished,
-					Content:  postContent,
-				}
-				res.Posts = append(res.Posts, post)
-			}
-		}
+		//log.Printf("After shuffle ids: %v (len %d)", ids, len(ids))
+		prepareSlice(ids, res)
+		log.Printf("Prepared %d posts\n", len(res.Posts))
 	}
 
 	return res, nil
+}
+
+func prepareSlice(ids []int, res *IolPostResp) {
+	maxItems := math.Min(float64(len(ids)), 10)
+	for i := 0; i < int(maxItems); i++ {
+		selected := ids[i]
+		qs := `SELECT user_name, date_published, post_content FROM iol_post WHERE rowid = ?;`
+		//fmt.Println(qs, selected)
+		row := connDb.QueryRow(qs, selected)
+		var userName, datePublished, postContent string
+		switch err := row.Scan(&userName, &datePublished, &postContent); err {
+		case sql.ErrNoRows:
+			log.Println("No rows were returned!")
+		case nil:
+			//fmt.Println(userName, datePublished, postContent)
+			post := IolPost{
+				UserName: userName,
+				Date:     datePublished,
+				Content:  postContent,
+			}
+			res.Posts = append(res.Posts, post)
+		}
+	}
 }
 
 func shuffle(vals []int) {

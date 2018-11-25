@@ -17,8 +17,6 @@ class Commander extends React.Component {
     this.state = {
       posts: []
     };
-
-    //this.serverRequest = this.serverRequest.bind(this);
   }
 
   serverRequest(cmd) {
@@ -58,7 +56,7 @@ class Commander extends React.Component {
             }}><i className="paper plane icon"></i>
           </button>
         </div>
-        <div className="ui container">
+        <div className="ui">
           <div className="comment">
             {this.state.posts.map(function (post, i) {
               return <Post key={i} post={post} />;
@@ -79,13 +77,15 @@ class Post extends React.Component {
   }
   render() {
     return (
-      <div className="content">
-        <a className="author">{this.props.post.UserName}</a>
-        <div className="metadata">
-          <span className="date">{this.props.post.Date}</span>
-        </div>
-        <div className="text">
-          {this.props.post.Content}
+      <div className="ui postId">
+        <div className="content">
+          <a className="author">{this.props.post.UserName}</a>
+          <div className="metadata">
+            <span className="date">{this.props.post.Date}</span>
+          </div>
+          <div className="text">
+            {this.props.post.Content}
+          </div>
         </div>
       </div>
     )

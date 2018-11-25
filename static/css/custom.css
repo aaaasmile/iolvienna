@@ -15,4 +15,8 @@
     float: left;
     width: 123px;
     height: 82px;
-} 
+}
+
+.postId{
+  padding: 1em 0em;
+}
