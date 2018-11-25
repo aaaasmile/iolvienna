@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"math"
 	"math/rand"
@@ -30,6 +31,34 @@ func OpenDatabase() {
 	if err != nil {
 		log.Fatal("Open connection with db failed: ", err.Error())
 	}
+}
+
+func PostsOnDate(dateText string) (*IolPostResp, error) {
+	qs := `SELECT rowid FROM iol_post WHERE date_published >= ? LIMIT(50);`
+	rows, err := connDb.Query(qs, dateText)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+	res := &IolPostResp{
+		Posts: []IolPost{},
+	}
+	var rowid int
+	ids := []int{}
+	for rows.Next() {
+		if err := rows.Scan(&rowid); err != nil {
+			return nil, err
+		}
+		ids = append(ids, rowid)
+	}
+	fmt.Println(ids)
+	if len(ids) > 0 {
+		prepareSlice(ids, res)
+		log.Printf("Prepared %d posts\n", len(res.Posts))
+	}
+
+	return res, nil
 }
 
 func MatchText(textMatch string) (*IolPostResp, error) {

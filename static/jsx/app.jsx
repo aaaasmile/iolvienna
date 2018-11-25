@@ -17,6 +17,7 @@ class Commander extends React.Component {
     this.state = {
       posts: []
     };
+    this.callMorePostsOnDate = this.callMorePostsOnDate.bind(this)
   }
 
   serverRequest(cmd) {
@@ -37,7 +38,19 @@ class Commander extends React.Component {
     })
   }
 
+  callMorePostsOnDate(date) {
+    var ser = $.param({ "date": date })
+    var url = 'do?' + ser
+    console.log('POST to ', url)
+    $.post(url, res => {
+      console.log('Res is:', res)
+      var pp = JSON.parse(res)
+      this.setState({ posts: pp.Posts })
+    })
+  }
+
   render() {
+    var that = this // importante per chiamare callMorePostsOnDate
     return (
       <div>
         <div className="ui left icon action input">
@@ -58,9 +71,11 @@ class Commander extends React.Component {
         </div>
         <div className="ui">
           <div className="comment">
-            {this.state.posts.map(function (post, i) {
-              return <Post key={i} post={post} />;
-            })}
+            { 
+              this.state.posts.map(function (post, i) {
+                return <Post key={i} post={post} morePostsOnDate={that.callMorePostsOnDate} />;
+              })
+            }
           </div>
         </div>
       </div>
@@ -75,13 +90,17 @@ class Post extends React.Component {
     };
 
   }
+
   render() {
     return (
       <div className="ui postId">
         <div className="content">
           <a className="author">{this.props.post.UserName}</a>
           <div className="metadata">
-            <span className="date">{this.props.post.Date}</span>
+            <a className="date" onClick={() => {
+              this.props.morePostsOnDate(this.props.post.Date)
+            }
+            }>{this.props.post.Date}</a>
           </div>
           <div className="text">
             {this.props.post.Content}

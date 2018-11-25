@@ -17,7 +17,7 @@ import (
 func checkDoRquest(reqURI string) bool {
 	aa := strings.Split(reqURI, "/")
 	cmd := aa[len(aa)-1]
-	fmt.Println(cmd)
+	//fmt.Println(cmd)
 	return strings.HasPrefix(cmd, "do")
 }
 
@@ -27,25 +27,39 @@ func IolAPiHandler(w http.ResponseWriter, req *http.Request) {
 		handleIndexGet(w, req)
 	case "POST":
 		log.Println("POST iol", req.RequestURI)
-		u, err := url.Parse(req.RequestURI)
-		if err != nil {
-			log.Println("Error uri: ", err)
-			return
-		}
-		if ok := checkDoRquest(req.RequestURI); !ok {
-			log.Println("Command invalid", req.RequestURI)
-			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte("400 - Bad Request"))
-			return
-		}
-		q := u.Query()
-		fmt.Println(q) // interface: do?req=<string>
-		if val, ok := q["req"]; ok {
-			log.Println("DO requested", val)
-			doSearchPlainText(w, req, val[0])
-			return
-		}
+		handlePost(w, req)
 	}
+}
+
+func handlePost(w http.ResponseWriter, req *http.Request) {
+	u, err := url.Parse(req.RequestURI)
+	if err != nil {
+		log.Println("Error uri: ", err)
+		return
+	}
+	if ok := checkDoRquest(req.RequestURI); !ok {
+		log.Println("Command invalid", req.RequestURI)
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("400 - Bad Request"))
+		return
+	}
+	q := u.Query()
+	log.Println(q) // interface: do?req=<string>
+	if val, ok := q["req"]; ok {
+		log.Println("DO request", val)
+		doSearchPlainText(w, req, val[0])
+		return
+	}
+
+	if val, ok := q["date"]; ok {
+		log.Println("DO date", val)
+		doPostsOnDate(w, req, val[0])
+		return
+	}
+
+	log.Println("Command invalid", req.RequestURI)
+	w.WriteHeader(http.StatusBadRequest)
+	w.Write([]byte("400 - Bad Request"))
 }
 
 var (
@@ -74,6 +88,25 @@ func handleIndexGet(w http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func doPostsOnDate(w http.ResponseWriter, req *http.Request, val string) {
+	pp, err := db.PostsOnDate(val)
+	if err != nil {
+		log.Println("DB error ", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("500 - Internal error"))
+		return
+	}
+
+	js, err := json.Marshal(pp)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Fprint(w, string(js))
+	return
 }
 
 func doSearchPlainText(w http.ResponseWriter, req *http.Request, val string) {
