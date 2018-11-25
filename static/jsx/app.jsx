@@ -18,11 +18,15 @@ class Commander extends React.Component {
     this.state = {
       posts: []
     };
-    
+
     this.serverRequest = this.serverRequest.bind(this);
   }
 
   serverRequest(cmd) {
+    if (!cmd) {
+      console.log('cmd is empty')
+      return
+    }
     var ser = $.param({ "req": cmd })
     var url = 'do?' + ser
     console.log('POST to ', url)
@@ -35,8 +39,18 @@ class Commander extends React.Component {
     return (
       <div className="ui left icon action input">
         <i className="search icon"></i>
-        <input type="text" placeholder="Cerca..."></input>
-        <button className="ui icon right attached primary button" onClick={() => this.serverRequest('oca')}><i className="paper plane icon"></i>
+        <input id="contcmd" type="text" placeholder="Cerca..." onKeyUp={(ev) => {
+          if (ev.key === 'Enter') {
+            let val = $('#contcmd').val()
+            console.log('Enter recognized: ', val)
+            this.serverRequest(val)
+            $('#contcmd').val('')
+          }
+        }}></input>
+        <button className="ui icon right attached primary button"
+          onClick={() => {
+            this.serverRequest($('#contcmd').val())
+          }}><i className="paper plane icon"></i>
         </button>
       </div >
     )
