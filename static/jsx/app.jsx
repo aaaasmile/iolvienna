@@ -36,7 +36,7 @@ class Commander extends React.Component {
       <div className="ui left icon action input">
         <i className="search icon"></i>
         <input type="text" placeholder="Cerca..."></input>
-        <button className="ui icon right attached primary button" onClick={this.serverRequest('oca')}><i className="paper plane icon"></i>
+        <button className="ui icon right attached primary button" onClick={() => this.serverRequest('oca')}><i className="paper plane icon"></i>
         </button>
       </div >
     )
