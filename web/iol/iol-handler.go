@@ -33,7 +33,7 @@ func IolAPiHandler(w http.ResponseWriter, req *http.Request) {
 			return
 		}
 		if ok := checkDoRquest(req.RequestURI); !ok {
-			log.Println("Command invalid")
+			log.Println("Command invalid", req.RequestURI)
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte("400 - Bad Request"))
 			return
