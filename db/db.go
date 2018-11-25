@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"math/rand"
+	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -52,24 +54,39 @@ func MatchText(textMatch string) (*IolPostResp, error) {
 	}
 	if len(ids) > 0 {
 		log.Printf("Found ids: %v (len %d)", ids, len(ids))
-		selected := ids[0] // todo better id picker
-		qs := `SELECT user_name, date_published, post_content FROM iol_post WHERE rowid = ?;`
-		fmt.Println(qs, selected)
-		row := connDb.QueryRow(qs, selected)
-		var userName, datePublished, postContent string
-		switch err := row.Scan(&userName, &datePublished, &postContent); err {
-		case sql.ErrNoRows:
-			log.Println("No rows were returned!")
-		case nil:
-			fmt.Println(userName, datePublished, postContent)
-			post := IolPost{
-				UserName: userName,
-				Date:     datePublished,
-				Content:  postContent,
+		shuffle(ids)
+		log.Printf("After shuffle ids: %v (len %d)", ids, len(ids))
+		maxItems := len(ids)
+		for i := 0; i < maxItems; i++ {
+			selected := ids[i]
+			qs := `SELECT user_name, date_published, post_content FROM iol_post WHERE rowid = ?;`
+			fmt.Println(qs, selected)
+			row := connDb.QueryRow(qs, selected)
+			var userName, datePublished, postContent string
+			switch err := row.Scan(&userName, &datePublished, &postContent); err {
+			case sql.ErrNoRows:
+				log.Println("No rows were returned!")
+			case nil:
+				fmt.Println(userName, datePublished, postContent)
+				post := IolPost{
+					UserName: userName,
+					Date:     datePublished,
+					Content:  postContent,
+				}
+				res.Posts = append(res.Posts, post)
 			}
-			res.Posts = append(res.Posts, post)
 		}
 	}
 
 	return res, nil
+}
+
+func shuffle(vals []int) {
+	r := rand.New(rand.NewSource(time.Now().Unix()))
+	for len(vals) > 0 {
+		n := len(vals)
+		randIndex := r.Intn(n)
+		vals[n-1], vals[randIndex] = vals[randIndex], vals[n-1]
+		vals = vals[:n-1]
+	}
 }

@@ -43,6 +43,7 @@ func IolAPiHandler(w http.ResponseWriter, req *http.Request) {
 		if val, ok := q["req"]; ok {
 			log.Println("DO requested", val)
 			doSearchPlainText(w, req, val[0])
+			return
 		}
 	}
 }
