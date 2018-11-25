@@ -42,6 +42,11 @@ go run --tags "fts5"  .\main.go
 go build --tags "fts5"
 
 == Deployment su hetz
+Fare attenzione che dist/app.js sia attuale. Su hetz non uso jx ma index_prod.html come template. Quindi:
+git pull su ~/build/iolvienna
+Poi lanciare lo script ./deploy_app.sh che crea l'app stoppa il service, copia i files e lo rilancia.
+
+== Deploy iniziale su hetz
 Copiato il db in ~/app/go/iol-service/db
 Ora ho fatto il checkout della repository in ~/app/go/iol-service/ con:
 git clone https://github.com/aaaasmile/iolvienna.git
@@ -56,6 +61,9 @@ sudo systemctl stop iolvienna
 Lo start invece:
 sudo systemctl start iolvienna
 
+== Build dist/app.js
+Powershell:
+PS D:\scratch\go-lang\iol-vienna\node> npm run build
 
 == React
 Ho usato index.html come contenitore del mio client sviluppato in react. Index.html l'ho messo come template
