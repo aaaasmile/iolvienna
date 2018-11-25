@@ -51,6 +51,10 @@ go build --tags "fts5"
 Poi sposto il file iolvienna in ../iolvienna.bin. Non dimenticare la dir static e il config.toml
 Ora il service è pronto per essere usato dietro ad un nginx (vedi readme_Hetzner.txt).
 ~/app/go/iol-service/iolvienna.bin
+Per stoppare il service:
+sudo systemctl stop iolvienna
+Lo start invece:
+sudo systemctl start iolvienna
 
 == React
 Ho usato index.html come contenitore del mio client sviluppato in react. Index.html l'ho messo come template
