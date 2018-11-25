@@ -11,6 +11,7 @@ type Config struct {
 	ServiceURL        string
 	RootURLPattern    string
 	AlwaysReloadTempl bool
+	UseProdTemplate   bool
 }
 
 var Current = &Config{

@@ -1,0 +1,62 @@
+{{define "base"}}
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description" content="Italians Online Vienna vintage collection" />
+  <link rel="shortcut icon" href="static/images/favicon.ico" type="image/x-icon" />
+
+  <title>IOL Vienna Vintage</title>
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  
+  <!-- Production react-->
+  <script type="application/javascript" src="https://unpkg.com/react@16.0.0/umd/react.production.min.js"></script>
+  <script type="application/javascript" src="https://unpkg.com/react-dom@16.0.0/umd/react-dom.production.min.js"></script>
+
+  <link rel="stylesheet" href="static/css/semantic.css" />
+  <link rel="stylesheet" href="static/css/custom.css" />
+</head>
+
+<body>
+  <div class="ui container">
+      <div id="header">
+          <div id="asterisk"></div> 
+      </div>
+      <div id="header_bottom">
+      </div>
+  </div>
+  <div class="ui container">
+    <div class="ui attached message">
+      <div class="header">
+        IOL Vienna Vintage
+      </div>
+      <p>
+        Quando le informazioni su Vienna passavano da qui
+      </p>
+    </div>
+    <!-- react app-->
+    <div class="ui main container" style="padding:2em 0em 7em" id="app"></div>
+    <!-- footer -->
+    <div class="ui vertical footer segment">
+      <div class="ui container">
+        <div class="ui stackable  divided equal ten stackable grid">
+          <div class="five wide column">
+            <h4 class="ui header">Version</h4>
+            <p>Software build {{.Buildnr}}</p>
+          </div>
+          <div class="seven wide column">
+            <h4 class="ui header">Info</h4>
+            <p><i class="copyright icon"></i> 2018 by Invido.it</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+<!-- compiled app -->
+<script src="static/dist/app.js"></script>
+
+</html>
+{{end}}

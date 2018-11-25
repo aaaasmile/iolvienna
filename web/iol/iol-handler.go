@@ -61,9 +61,13 @@ func handleIndexGet(w http.ResponseWriter, req *http.Request) {
 		RootUrl: conf.Current.RootURLPattern,
 		Buildnr: idl.Buildnr,
 	}
+	templName := "templates/index.html"
+	if conf.Current.UseProdTemplate {
+		templName = "templates/index_prod.html"
+	}
 	if tmplIndex == nil || conf.Current.AlwaysReloadTempl {
 		log.Println("Load the template, reload on request is ", conf.Current.AlwaysReloadTempl)
-		tmplIndex = template.Must(template.New("AppIndex").ParseFiles("templates/index.html"))
+		tmplIndex = template.Must(template.New("AppIndex").ParseFiles(templName))
 	}
 	err := tmplIndex.ExecuteTemplate(w, "base", pagectx)
 	if err != nil {
