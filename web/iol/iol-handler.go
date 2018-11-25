@@ -53,7 +53,17 @@ func handlePost(w http.ResponseWriter, req *http.Request) {
 
 	if val, ok := q["date"]; ok {
 		log.Println("DO date", val)
-		doPostsOnDate(w, req, val[0])
+		doPostsOnDate(w, req, val[0], false, false)
+		return
+	}
+	if val, ok := q["dateless"]; ok {
+		log.Println("DO date less", val)
+		doPostsOnDate(w, req, val[0], false, true)
+		return
+	}
+	if val, ok := q["datemore"]; ok {
+		log.Println("DO date more", val)
+		doPostsOnDate(w, req, val[0], true, false)
 		return
 	}
 
@@ -90,8 +100,8 @@ func handleIndexGet(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func doPostsOnDate(w http.ResponseWriter, req *http.Request, val string) {
-	pp, err := db.PostsOnDate(val)
+func doPostsOnDate(w http.ResponseWriter, req *http.Request, val string, more bool, less bool) {
+	pp, err := db.PostsOnDate(val, more, less)
 	if err != nil {
 		log.Println("DB error ", err)
 		w.WriteHeader(http.StatusInternalServerError)

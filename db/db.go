@@ -2,7 +2,6 @@ package db
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"math"
 	"math/rand"
@@ -33,8 +32,13 @@ func OpenDatabase() {
 	}
 }
 
-func PostsOnDate(dateText string) (*IolPostResp, error) {
+func PostsOnDate(dateText string, more bool, less bool) (*IolPostResp, error) {
 	qs := `SELECT rowid FROM iol_post WHERE date_published >= ? LIMIT(50);`
+	if more {
+		qs = `SELECT rowid FROM iol_post WHERE date_published > ? LIMIT(50);`
+	} else if less {
+		qs = `SELECT rowid FROM iol_post WHERE date_published < ? LIMIT(50);`
+	}
 	rows, err := connDb.Query(qs, dateText)
 	if err != nil {
 		return nil, err
@@ -52,7 +56,7 @@ func PostsOnDate(dateText string) (*IolPostResp, error) {
 		}
 		ids = append(ids, rowid)
 	}
-	fmt.Println(ids)
+	//fmt.Println(ids)
 	if len(ids) > 0 {
 		prepareSlice(ids, res)
 		log.Printf("Prepared %d posts\n", len(res.Posts))

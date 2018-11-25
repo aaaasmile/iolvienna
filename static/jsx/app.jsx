@@ -49,6 +49,31 @@ class Commander extends React.Component {
     })
   }
 
+  movePostsOnDate(forw) {
+    if (this.state.posts.length > 0) {
+      var date
+      var ser
+      if (forw) {
+        // forward
+        let last = this.state.posts[this.state.posts.length - 1]
+        date = last.Date
+        ser = $.param({ "datemore": date })
+      } else {
+        // backward
+        let first = this.state.posts[0]
+        date = first.Date
+        ser = $.param({ "dateless": date })
+      }
+      var url = 'do?' + ser
+      console.log('POST to ', url)
+      $.post(url, res => {
+        console.log('Res is:', res)
+        var pp = JSON.parse(res)
+        this.setState({ posts: pp.Posts })
+      })
+    }
+  }
+
   render() {
     var that = this // importante per chiamare callMorePostsOnDate
     return (
@@ -71,12 +96,18 @@ class Commander extends React.Component {
         </div>
         <div className="ui">
           <div className="comment">
-            { 
+            {
               this.state.posts.map(function (post, i) {
                 return <Post key={i} post={post} morePostsOnDate={that.callMorePostsOnDate} />;
               })
             }
           </div>
+          {this.state.posts && this.state.posts.length > 0 ?
+            <div >
+              <a onClick={() => this.movePostsOnDate(false)}><i className="backward icon"></i></a> <a onClick={() => this.movePostsOnDate(true)}><i className="forward icon"></i></a>
+            </div>
+            : null
+          }
         </div>
       </div>
     )
@@ -95,7 +126,7 @@ class Post extends React.Component {
     return (
       <div className="ui postId">
         <div className="content">
-          <a className="author">{this.props.post.UserName}</a>
+          <div className="author">{this.props.post.UserName}</div>
           <div className="metadata">
             <a className="date" onClick={() => {
               this.props.morePostsOnDate(this.props.post.Date)
