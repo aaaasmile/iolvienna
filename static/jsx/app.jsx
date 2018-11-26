@@ -67,7 +67,7 @@ class Commander extends React.Component {
       var url = 'do?' + ser
       console.log('POST to ', url)
       $.post(url, res => {
-        console.log('Res is:', res)
+        //console.log('Res is:', res)
         var pp = JSON.parse(res)
         this.setState({ posts: pp.Posts })
       })
