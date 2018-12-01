@@ -21,11 +21,22 @@ class Commander extends React.Component {
   }
 
   parseRequest(req) {
-    let words = req.split(':');
-    let cmd = words[1]
+    let arg = ""
+    let cmd = ""
     if (req.indexOf(":") === -1) {
       cmd = ""
+    }else{
+      let words = req.split(':');
+      cmd = words[1].trim()
     }
+    if (cmd) {
+      arg = cmd.split(' ')
+      if (arg.length > 1){
+        cmd = arg[0]
+        arg = arg[1] //support only one argument
+      }
+    }
+
     switch (cmd) {
       case "aiuto":
         console.log('Aiuto requested')
@@ -34,17 +45,61 @@ class Commander extends React.Component {
       case "clr":
         this.clearResult()
         break
+      case "data":
+        console.log('Date post request')
+        let ddreq = this.makeDateForReq(arg, x => { 
+          console.log('Parse error:', x) 
+        })
+        if (ddreq) {
+          this.requestPostsOnDate(ddreq)
+        }
+        break
       default:
+        console.log('Server search request')
         this.serverRequest(req)
         break
     }
+  }
+
+  makeDateForReq(datestr, errFn) {
+    let arr = datestr.split('/')
+    if (arr.length !== 3) {
+      errFn('Data non è nel formato corretto')
+      return
+    }
+    let gg = parseInt(arr[0])
+    if (gg < 1 || gg > 31) {
+      errFn('Mese non è nel formato corretto (1-31)')
+      return
+    }
+    let mm = parseInt(arr[1])
+    if (mm < 1 || mm > 12) {
+      errFn('Mese non è nel formato corretto (1-12)')
+      return
+    }
+    if (arr[2].length === 2) {
+      arr[2] = "20" + arr[2]
+    }
+    let yy = parseInt(arr[2])
+    if (yy < 2000 || yy > 2099) {
+      errFn('Anno non è nel formato corretto')
+      return
+    }
+    if (gg < 10) {
+      gg = "0" + gg
+    }
+    if (mm < 10) {
+      mm = "0" + mm
+    }
+    let strdate = `${yy}-${mm}-${gg}T00:00:00.000Z`
+    return strdate
   }
 
   showHelp() {
     this.setState({ help: true, posts: [] })
   }
 
-  clearResult(){
+  clearResult() {
     this.setState({ help: false, posts: [] })
   }
 
@@ -59,7 +114,7 @@ class Commander extends React.Component {
     $.post(url, res => {
       console.log('Res is:', res)
       var pp = JSON.parse(res)
-      this.setState({ posts: pp.Posts, help: false})
+      this.setState({ posts: pp.Posts, help: false })
       // pp.Posts.forEach(element => {
       //console.log(element)
       // });
