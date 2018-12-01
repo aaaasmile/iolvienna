@@ -168,7 +168,7 @@ class Commander extends React.Component {
       $.post(url, res => {
         //console.log('Res is:', res)
         var pp = JSON.parse(res)
-        this.setNewState({ posts: pp.Posts })
+        this.setNewState({ posts: pp.Posts, req: this.formatDate(date) })
       })
     }
   }
@@ -209,7 +209,12 @@ class Commander extends React.Component {
                 }
               </div>
               <div >
-                <a onClick={() => this.movePostsOnDate(false)}><i className="backward icon"></i></a> <a onClick={() => this.movePostsOnDate(true)}><i className="forward icon"></i></a>
+                <button className="ui labeled icon button" onClick={() => this.movePostsOnDate(false)}>
+                  <i className="left arrow icon"></i> Indietro
+                </button>
+                <button className="ui right labeled icon right floated button" onClick={() => this.movePostsOnDate(true)}>
+                  <i className="right arrow icon"></i> Avanti
+                </button>
               </div>
             </div>
             : null

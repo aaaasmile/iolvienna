@@ -2,5 +2,5 @@ package idl
 
 var (
 	Appname = "iol-service"
-	Buildnr = "0.2.12"
+	Buildnr = "0.2.011218"
 )
