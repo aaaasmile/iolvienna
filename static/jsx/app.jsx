@@ -38,6 +38,7 @@ class Commander extends React.Component {
     }
 
     switch (cmd) {
+      case "?":
       case "aiuto":
         console.log('Aiuto requested')
         this.showHelp()
@@ -216,6 +217,7 @@ class Help extends React.Component {
               I comandi che si possono utilizzare sono sempre prefissati dai due punti:
               <ul>
                 <li><b>:aiuto</b><br />mostra questa schermata</li>
+                <li><b>:?</b><br />mostra questa schermata</li>
                 <li><b>:data</b> <i>segue una data in formato gg/mm/aaaa.</i> <br />Per esempio, per vedere i post del 27 gennaio 2003 si usa:<br />:data 27/01/2003</li>
                 <li><b>:clr</b><br />cancella il risultato</li>
                 <li><i>Parola o frase che non sia un comando</i><br />Esegue una ricerca all'interno di tutti posts e ne presenta un risultato limitato.</li>
