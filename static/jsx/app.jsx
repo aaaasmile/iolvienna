@@ -22,7 +22,7 @@ class Commander extends React.Component {
 
   parseRequest(req) {
     let words = req.split(':');
-    let cmd = words[0]
+    let cmd = words[1]
     if (req.indexOf(":") === -1) {
       cmd = ""
     }
@@ -108,7 +108,7 @@ class Commander extends React.Component {
       <div>
         <div className="ui left icon action input">
           <i className="search icon"></i>
-          <input id="contcmd" type="text" placeholder="prova con aiuto:" onKeyUp={(ev) => {
+          <input id="contcmd" type="text" placeholder="prova con :aiuto" onKeyUp={(ev) => {
             if (ev.key === 'Enter') {
               let val = $('#contcmd').val()
               console.log('Enter recognized: ', val)
@@ -158,11 +158,11 @@ class Help extends React.Component {
           <div className="ui" id="helpid">
             <h3>Aiuto</h3>
             <div>
-              I comandi che si possono utilizzare sono sempre seguiti dai due punti:
+              I comandi che si possono utilizzare sono sempre prefissati dai due punti:
               <ul>
-                <li>aiuto:<br />mostra questa schermata</li>
-                <li>data: <i>segue una data in formato gg/mm/aaaa.</i> <br />Per esempio, per vedere i post del 27 gennaio 2003 si usa:<br />data:27/01/2003</li>
-                <li>clr: <br />cancella il risultato</li>
+                <li><b>:aiuto</b><br />mostra questa schermata</li>
+                <li><b>:data</b> <i>segue una data in formato gg/mm/aaaa.</i> <br />Per esempio, per vedere i post del 27 gennaio 2003 si usa:<br />:data 27/01/2003</li>
+                <li><b>:clr</b><br />cancella il risultato</li>
                 <li><i>Parola o frase che non sia un comando</i><br />Esegue una ricerca all'interno di tutti posts e ne presenta un risultato limitato.</li>
               </ul>
               Nei lista dei post è possibile selezionarne uno cliccando sulla data. Da questo punto si segue lo stream dei messaggi.
