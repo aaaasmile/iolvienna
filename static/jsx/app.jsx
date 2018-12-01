@@ -249,10 +249,10 @@ class Help extends React.Component {
 
   render() {
     return (
-      <div>
+      <div id="helpid">
         {this.props.help ?
-          <div className="ui" id="helpid">
-            <h3>Aiuto</h3>
+          <div className="ui message">
+            <div className="header">Aiuto</div>
             <div>
               I comandi che si possono utilizzare sono sempre prefissati dai due punti:
               <ul>
