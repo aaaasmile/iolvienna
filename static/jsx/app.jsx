@@ -31,6 +31,9 @@ class Commander extends React.Component {
         console.log('Aiuto requested')
         this.showHelp()
         break
+      case "clr":
+        this.clearResult()
+        break
       default:
         this.serverRequest(req)
         break
@@ -39,6 +42,10 @@ class Commander extends React.Component {
 
   showHelp() {
     this.setState({ help: true, posts: [] })
+  }
+
+  clearResult(){
+    this.setState({ help: false, posts: [] })
   }
 
   serverRequest(cmd) {
