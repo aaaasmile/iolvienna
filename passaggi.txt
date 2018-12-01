@@ -79,4 +79,11 @@ Il file .babelrc non serve in quanto uso la cli direttamente dal file package.js
 Il quale esamina la dir static/js e compila in static/dist.
 Con il file compilato è possibile rimovere babel da index.html ed usare app.js alla fine del body in index.html.
 
+== Markdown
+Nella mia soluzione non posso usare library come markdown-react-js perché non riesco ad usare il comando import
+in quanto non ho nessun builder incorporato come webpack.
+Si può usare markdown-it.min.js che ho messo sotto static/js, però in jsx non si mette il codice html generato
+nel componente come prop. Si può, ma viene considerato un problema di corss scripting attack anche se funziona(vedi tmp/repo/markdown). 
+
+
 

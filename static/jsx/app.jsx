@@ -22,7 +22,11 @@ class Commander extends React.Component {
 
   parseRequest(req) {
     let words = req.split(':');
-    switch (words[0]) {
+    let cmd = words[0]
+    if (req.indexOf(":") === -1) {
+      cmd = ""
+    }
+    switch (cmd) {
       case "aiuto":
         console.log('Aiuto requested')
         this.showHelp()
@@ -34,10 +38,7 @@ class Commander extends React.Component {
   }
 
   showHelp() {
-    this.setState({
-      help: `
-    Allora per cominciare, prova ad inserire un testo da cercare, tipo 'ciao'.
-    Questi sono i comandi disponibili:` })
+    this.setState({ help: true, posts: [] })
   }
 
   serverRequest(cmd) {
@@ -51,7 +52,7 @@ class Commander extends React.Component {
     $.post(url, res => {
       console.log('Res is:', res)
       var pp = JSON.parse(res)
-      this.setState({ posts: pp.Posts })
+      this.setState({ posts: pp.Posts, help: false})
       // pp.Posts.forEach(element => {
       //console.log(element)
       // });
@@ -65,7 +66,7 @@ class Commander extends React.Component {
     $.post(url, res => {
       console.log('Res is:', res)
       var pp = JSON.parse(res)
-      this.setState({ posts: pp.Posts })
+      this.setState({ posts: pp.Posts, help: false })
     })
   }
 
@@ -115,16 +116,18 @@ class Commander extends React.Component {
           </button>
         </div>
         <div className="ui" id="respost">
-          <div className="comment">
-            {
-              this.state.posts.map(function (post, i) {
-                return <Post key={i} post={post} morePostsOnDate={that.requestPostsOnDate} />;
-              })
-            }
-          </div>
           {this.state.posts && this.state.posts.length > 0 ?
-            <div >
-              <a onClick={() => this.movePostsOnDate(false)}><i className="backward icon"></i></a> <a onClick={() => this.movePostsOnDate(true)}><i className="forward icon"></i></a>
+            <div>
+              <div className="comment">
+                {
+                  this.state.posts.map(function (post, i) {
+                    return <Post key={i} post={post} morePostsOnDate={that.requestPostsOnDate} />;
+                  })
+                }
+              </div>
+              <div >
+                <a onClick={() => this.movePostsOnDate(false)}><i className="backward icon"></i></a> <a onClick={() => this.movePostsOnDate(true)}><i className="forward icon"></i></a>
+              </div>
             </div>
             : null
           }
@@ -141,18 +144,23 @@ class Help extends React.Component {
     this.state = {};
   }
 
-  parseMd(str) {
-    var md = window.markdownit();
-    var result = md.render('# markdown-it rulezz!')
-    console.log(result)
-    return {__html: result};
-  }
-
   render() {
     return (
       <div>
         {this.props.help ?
-          <div className="ui" dangerouslySetInnerHTML={this.parseMd(this.props.help)}></div>
+          <div className="ui" id="helpid">
+            <h3>Aiuto</h3>
+            <div>
+              I comandi che si possono utilizzare sono sempre seguiti dai due punti:
+              <ul>
+                <li>aiuto:<br />mostra questa schermata</li>
+                <li>data: <i>segue una data in formato gg/mm/aaaa.</i> <br />Per esempio, per vedere i post del 27 gennaio 2003 si usa:<br />data:27/01/2003</li>
+                <li>clr: <br />cancella il risultato</li>
+                <li><i>Parola o frase che non sia un comando</i><br />Esegue una ricerca all'interno di tutti posts e ne presenta un risultato limitato.</li>
+              </ul>
+              Nei lista dei post è possibile selezionarne uno cliccando sulla data. Da questo punto si segue lo stream dei messaggi.
+          </div>
+          </div>
           : null}
       </div>
     )
