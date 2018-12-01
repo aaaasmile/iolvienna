@@ -28,3 +28,7 @@
 #respost{
   max-width: 40em;
 }
+
+#errMsg{
+  padding: 1em 0em;
+}

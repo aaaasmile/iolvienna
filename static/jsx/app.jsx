@@ -11,6 +11,10 @@ class App extends React.Component {
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////// COMMANDER 
+//////////////////////////////////////////////////////////////////////////////////////
+
 class Commander extends React.Component {
   constructor(props) {
     super(props);
@@ -25,13 +29,13 @@ class Commander extends React.Component {
     let cmd = ""
     if (req.indexOf(":") === -1) {
       cmd = ""
-    }else{
+    } else {
       let words = req.split(':');
       cmd = words[1].trim()
     }
     if (cmd) {
       arg = cmd.split(' ')
-      if (arg.length > 1){
+      if (arg.length > 1) {
         cmd = arg[0]
         arg = arg[1] //support only one argument
       }
@@ -48,8 +52,9 @@ class Commander extends React.Component {
         break
       case "data":
         console.log('Date post request')
-        let ddreq = this.makeDateForReq(arg, x => { 
-          console.log('Parse error:', x) 
+        let ddreq = this.makeDateForReq(arg, err => {
+          console.log('Parse error:', err)
+          this.setNewState({ error: err })
         })
         if (ddreq) {
           this.requestPostsOnDate(ddreq)
@@ -62,10 +67,15 @@ class Commander extends React.Component {
     }
   }
 
+  setNewState(obj) {
+    this.clearResult()
+    this.setState(obj)
+  }
+
   makeDateForReq(datestr, errFn) {
     let arr = datestr.split('/')
     if (arr.length !== 3) {
-      errFn('Data non è nel formato corretto')
+      errFn('Data non è nel formato corretto (es. data corretta 23/12/2007)')
       return
     }
     let gg = parseInt(arr[0])
@@ -97,11 +107,11 @@ class Commander extends React.Component {
   }
 
   showHelp() {
-    this.setState({ help: true, posts: [] })
+    this.setNewState({ help: true })
   }
 
   clearResult() {
-    this.setState({ help: false, posts: [] })
+    this.setState({ help: false, posts: [], error: "" })
   }
 
   serverRequest(cmd) {
@@ -115,7 +125,7 @@ class Commander extends React.Component {
     $.post(url, res => {
       console.log('Res is:', res)
       var pp = JSON.parse(res)
-      this.setState({ posts: pp.Posts, help: false })
+      this.setNewState({ posts: pp.Posts })
       // pp.Posts.forEach(element => {
       //console.log(element)
       // });
@@ -129,7 +139,7 @@ class Commander extends React.Component {
     $.post(url, res => {
       console.log('Res is:', res)
       var pp = JSON.parse(res)
-      this.setState({ posts: pp.Posts, help: false })
+      this.setNewState({ posts: pp.Posts })
     })
   }
 
@@ -153,7 +163,7 @@ class Commander extends React.Component {
       $.post(url, res => {
         //console.log('Res is:', res)
         var pp = JSON.parse(res)
-        this.setState({ posts: pp.Posts })
+        this.setNewState({ posts: pp.Posts })
       })
     }
   }
@@ -195,11 +205,41 @@ class Commander extends React.Component {
             : null
           }
           <Help help={this.state.help}></Help>
+          <Error err={this.state.error}></Error>
         </div>
       </div>
     )
   }
 }
+
+///////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////// ERRROR 
+///////////////////////////////////////////////////////////////////////////////////
+
+class Error extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
+  render() {
+    return (
+      <div id="errMsg">
+        {this.props.err ?
+        <div className="ui message">
+          <div className="header">
+            Errore
+          </div>
+          <div>{this.props.err}</div>
+        </div>
+          : null}
+      </div>
+    )
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////// HELP 
+///////////////////////////////////////////////////////////////////////////////////
 
 class Help extends React.Component {
   constructor(props) {
@@ -230,6 +270,10 @@ class Help extends React.Component {
     )
   }
 }
+
+///////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////// POST 
+///////////////////////////////////////////////////////////////////////////////////
 
 class Post extends React.Component {
   constructor(props) {
