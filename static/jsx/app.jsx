@@ -17,7 +17,7 @@ class Commander extends React.Component {
     this.state = {
       posts: []
     };
-    this.callMorePostsOnDate = this.callMorePostsOnDate.bind(this)
+    this.requestPostsOnDate = this.requestPostsOnDate.bind(this)
   }
 
   serverRequest(cmd) {
@@ -38,7 +38,7 @@ class Commander extends React.Component {
     })
   }
 
-  callMorePostsOnDate(date) {
+  requestPostsOnDate(date) {
     var ser = $.param({ "date": date })
     var url = 'do?' + ser
     console.log('POST to ', url)
@@ -75,7 +75,7 @@ class Commander extends React.Component {
   }
 
   render() {
-    var that = this // importante per chiamare callMorePostsOnDate
+    var that = this // importante per chiamare requestPostsOnDate
     return (
       <div>
         <div className="ui left icon action input">
@@ -98,7 +98,7 @@ class Commander extends React.Component {
           <div className="comment">
             {
               this.state.posts.map(function (post, i) {
-                return <Post key={i} post={post} morePostsOnDate={that.callMorePostsOnDate} />;
+                return <Post key={i} post={post} morePostsOnDate={that.requestPostsOnDate} />;
               })
             }
           </div>
