@@ -139,8 +139,13 @@ class Commander extends React.Component {
     $.post(url, res => {
       console.log('Res is:', res)
       var pp = JSON.parse(res)
-      this.setNewState({ posts: pp.Posts, req: date })
+      this.setNewState({ posts: pp.Posts, req: this.formatDate(date) })
     })
+  }
+
+  formatDate(datestr) {
+    let post = new Post()
+    return post.formatDate(datestr)
   }
 
   movePostsOnDate(forw) {
@@ -296,7 +301,15 @@ class Post extends React.Component {
     if (mm.length < 2) {
       mm = "0" + mm
     }
-    return gg + '/' + mm + '/' + date.getFullYear()
+    let min = date.getMinutes()
+    if (min < 10) {
+      min = "0" + min
+    }
+    let hh = date.getHours()
+    if (hh < 10) {
+      hh = "0" + hh
+    }
+    return gg + '/' + mm + '/' + date.getFullYear() + " " + hh + ":" + min
   }
 
   render() {
