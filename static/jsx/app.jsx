@@ -225,7 +225,7 @@ class Error extends React.Component {
     return (
       <div id="errMsg">
         {this.props.err ?
-        <div className="ui message">
+        <div className="ui error message">
           <div className="header">
             Errore
           </div>
