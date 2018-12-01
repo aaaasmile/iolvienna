@@ -210,7 +210,8 @@ class Commander extends React.Component {
         //console.log('Res is:', res)
         var pp = JSON.parse(res);
         this.setNewState({
-          posts: pp.Posts
+          posts: pp.Posts,
+          req: this.formatDate(date)
         });
       });
     }
@@ -255,15 +256,17 @@ class Commander extends React.Component {
         post: post,
         morePostsOnDate: that.requestPostsOnDate
       });
-    })), React.createElement("div", null, React.createElement("a", {
+    })), React.createElement("div", null, React.createElement("button", {
+      className: "ui labeled icon button",
       onClick: () => this.movePostsOnDate(false)
     }, React.createElement("i", {
-      className: "backward icon"
-    })), " ", React.createElement("a", {
+      className: "left arrow icon"
+    }), " Indietro"), React.createElement("button", {
+      className: "ui right labeled icon right floated button",
       onClick: () => this.movePostsOnDate(true)
     }, React.createElement("i", {
-      className: "forward icon"
-    })))) : null, React.createElement(Help, {
+      className: "right arrow icon"
+    }), " Avanti"))) : null, React.createElement(Help, {
       help: this.state.help
     }), React.createElement(Error, {
       err: this.state.error
