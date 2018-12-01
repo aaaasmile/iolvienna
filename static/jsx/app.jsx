@@ -94,7 +94,7 @@ class Commander extends React.Component {
             }}><i className="paper plane icon"></i>
           </button>
         </div>
-        <div className="ui">
+        <div className="ui" id="respost">
           <div className="comment">
             {
               this.state.posts.map(function (post, i) {
@@ -122,6 +122,19 @@ class Post extends React.Component {
 
   }
 
+  formatDate(dateStr){
+    let date = new Date(dateStr)
+    let gg = "" + date.getDate()
+    if (gg.length < 2) {
+      gg = "0" + gg
+    }
+    let mm = "" + (date.getMonth() + 1)
+    if (mm.length < 2){
+      mm = "0" + mm
+    }
+    return gg + '/' + mm +  '/' + date.getFullYear()
+  }
+
   render() {
     return (
       <div className="ui postId">
@@ -131,7 +144,7 @@ class Post extends React.Component {
             <a className="date" onClick={() => {
               this.props.morePostsOnDate(this.props.post.Date)
             }
-            }>{this.props.post.Date}</a>
+            }>{this.formatDate(this.props.post.Date)}</a>
           </div>
           <div className="text">
             {this.props.post.Content}

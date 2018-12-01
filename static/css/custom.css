@@ -20,3 +20,7 @@
 .postId{
   padding: 1em 0em;
 }
+
+#respost{
+  max-width: 40em;
+}
