@@ -3,7 +3,7 @@ class App extends React.Component {
     return (
       <div>
         <div className="ui minimal comments">
-          <h3 className="ui dividing header">Esplora</h3>
+          <h3 className="ui dividing header">Esplora, cerca e comanda</h3>
         </div>
         <Commander></Commander>
       </div>
@@ -18,6 +18,25 @@ class Commander extends React.Component {
       posts: []
     };
     this.requestPostsOnDate = this.requestPostsOnDate.bind(this)
+  }
+
+  parseRequest(req) {
+    let words = req.split(':');
+    switch (words[0]) {
+      case "aiuto":
+        console.log('Aiuto requested')
+        this.showHelp()
+        break
+      default:
+        this.serverRequest(req)
+        break
+    }
+  }
+
+  showHelp() {
+    this.setState({ help: `
+    Allora per cominciare, prova ad inserire un testo da cercare, tipo 'ciao'.
+    Questi sono i comandi disponibili:` })
   }
 
   serverRequest(cmd) {
@@ -80,17 +99,17 @@ class Commander extends React.Component {
       <div>
         <div className="ui left icon action input">
           <i className="search icon"></i>
-          <input id="contcmd" type="text" placeholder="Cerca..." onKeyUp={(ev) => {
+          <input id="contcmd" type="text" placeholder="prova con aiuto:" onKeyUp={(ev) => {
             if (ev.key === 'Enter') {
               let val = $('#contcmd').val()
               console.log('Enter recognized: ', val)
-              this.serverRequest(val)
+              this.parseRequest(val)
               $('#contcmd').val('')
             }
           }}></input>
           <button className="ui icon right attached primary button"
             onClick={() => {
-              this.serverRequest($('#contcmd').val())
+              this.parseRequest($('#contcmd').val())
             }}><i className="paper plane icon"></i>
           </button>
         </div>
@@ -108,7 +127,22 @@ class Commander extends React.Component {
             </div>
             : null
           }
+          <Help help={this.state.help}></Help>
         </div>
+      </div>
+    )
+  }
+}
+
+class Help extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
+  render() {
+    return (
+      <div className="ui">
+        {this.props.help}
       </div>
     )
   }
@@ -117,22 +151,20 @@ class Commander extends React.Component {
 class Post extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-    };
-
+    this.state = {};
   }
 
-  formatDate(dateStr){
+  formatDate(dateStr) {
     let date = new Date(dateStr)
     let gg = "" + date.getDate()
     if (gg.length < 2) {
       gg = "0" + gg
     }
     let mm = "" + (date.getMonth() + 1)
-    if (mm.length < 2){
+    if (mm.length < 2) {
       mm = "0" + mm
     }
-    return gg + '/' + mm +  '/' + date.getFullYear()
+    return gg + '/' + mm + '/' + date.getFullYear()
   }
 
   render() {
