@@ -111,7 +111,7 @@ class Commander extends React.Component {
   }
 
   clearResult() {
-    this.setState({ help: false, posts: [], error: "" })
+    this.setState({ help: false, posts: [], error: "", req: "" })
   }
 
   serverRequest(cmd) {
@@ -125,7 +125,7 @@ class Commander extends React.Component {
     $.post(url, res => {
       console.log('Res is:', res)
       var pp = JSON.parse(res)
-      this.setNewState({ posts: pp.Posts })
+      this.setNewState({ posts: pp.Posts, req: cmd })
       // pp.Posts.forEach(element => {
       //console.log(element)
       // });
@@ -139,7 +139,7 @@ class Commander extends React.Component {
     $.post(url, res => {
       console.log('Res is:', res)
       var pp = JSON.parse(res)
-      this.setNewState({ posts: pp.Posts })
+      this.setNewState({ posts: pp.Posts, req: date })
     })
   }
 
@@ -191,6 +191,11 @@ class Commander extends React.Component {
         <div className="ui" id="respost">
           {this.state.posts && this.state.posts.length > 0 ?
             <div>
+              {this.state.req ?
+                <div className="ui small header">
+                  Risultati per: <i>{this.state.req}</i>
+                </div>
+                : null}
               <div className="comment">
                 {
                   this.state.posts.map(function (post, i) {
@@ -225,12 +230,12 @@ class Error extends React.Component {
     return (
       <div id="errMsg">
         {this.props.err ?
-        <div className="ui error message">
-          <div className="header">
-            Errore
+          <div className="ui error message">
+            <div className="header">
+              Errore
           </div>
-          <div>{this.props.err}</div>
-        </div>
+            <div>{this.props.err}</div>
+          </div>
           : null}
       </div>
     )
