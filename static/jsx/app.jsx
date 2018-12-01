@@ -34,7 +34,8 @@ class Commander extends React.Component {
   }
 
   showHelp() {
-    this.setState({ help: `
+    this.setState({
+      help: `
     Allora per cominciare, prova ad inserire un testo da cercare, tipo 'ciao'.
     Questi sono i comandi disponibili:` })
   }
@@ -139,10 +140,20 @@ class Help extends React.Component {
     super(props);
     this.state = {};
   }
+
+  parseMd(str) {
+    var md = window.markdownit();
+    var result = md.render('# markdown-it rulezz!')
+    console.log(result)
+    return {__html: result};
+  }
+
   render() {
     return (
-      <div className="ui">
-        {this.props.help}
+      <div>
+        {this.props.help ?
+          <div className="ui" dangerouslySetInnerHTML={this.parseMd(this.props.help)}></div>
+          : null}
       </div>
     )
   }
