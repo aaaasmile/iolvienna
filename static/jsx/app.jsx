@@ -382,7 +382,8 @@ class Info extends React.Component {
               fino alla definitiva chiusura in un momento buio e imprecisato di qualche anno fa.</p>
             <p>Ora <b>IOL Vienna Vintage</b> offre la possibilità di navigare in tutta quella miriade di messaggi, senza però la possibilità di aggiungerne di nuovi.</p>
             <p>Se questa necessità ci fosse o ci fosse stata, il forum non sarebbe di certo morto.</p>
-            <p>Per inizare questo viaggio nel passato basta inserire un comando oppure una parola da cercare. I comandi a disposizione si hanno con :?</p>
+            <p>Per inizare questo viaggio nel passato basta inserire un comando oppure una parola da cercare.</p> 
+            <p>Per esempio con la parola <a onClick={() => {this.props.doreq("chi cerca trova")}}>chi cerca trova</a>.I comandi a disposizione si hanno con :?</p>
             <p>Buon divertimento! Vostro <a onClick={() => {
               this.props.doreq(":caso aaaasmile")
             }}>[aaaasmile]</a></p>
