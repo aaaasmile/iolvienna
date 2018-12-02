@@ -81,8 +81,15 @@ class Commander extends React.Component {
   makeDateForReq(datestr, errFn) {
     let arr = datestr.split('/')
     if (arr.length !== 3) {
-      errFn('Data non è nel formato corretto (es. data corretta 23/12/2007)')
-      return
+      if (datestr.length === 6) {
+        arr = []
+        arr.push(datestr.slice(0, 2))
+        arr.push(datestr.slice(2, 4))
+        arr.push(datestr.slice(4, 6))
+      } else {
+        errFn('Data non è nel formato corretto (es. data corretta 23/12/2007)')
+        return
+      }
     }
     let gg = parseInt(arr[0])
     if (gg < 1 || gg > 31) {
@@ -300,7 +307,10 @@ class Help extends React.Component {
               <ul>
                 <li><b>:aiuto</b><br />mostra questa schermata</li>
                 <li><b>:?</b><br />mostra questa schermata</li>
-                <li><b>:data</b> <i>segue una data in formato gg/mm/aaaa.</i> <br />Per esempio, per vedere i post del 27 gennaio 2003 si usa:<br />:data 27/01/2003</li>
+                <li><b>:data</b> <i>segue una data in formato gg/mm/aaaa.</i> <br />
+                  Per esempio, per vedere i post del 27 gennaio 2003 si usa:<br />:data 27/01/2003<br />
+                  Va bene anche il formato a 6 caratteri senza separatore:<br />:data 270103
+                </li>
                 <li><b>:clr</b><br />cancella il risultato</li>
                 <li><b>:caso</b><br />
                   <i>seguito dal nome di utente</i><br />Ritorna dei post casuali relativi as un utente <br />
