@@ -1,10 +1,29 @@
 class App extends React.Component {
+  constructor(props) {
+    super(props);
+    console.log("APP is build in constructor");
+    this.onInfoClick = this.onInfoClick.bind(this);
+    this.commanderRef = React.createRef();
+  }
+
+  onInfoClick() {
+    console.log("Info clicked in APP");
+    this.commanderRef.current.showInfo();
+  }
+
   render() {
-    return React.createElement("div", null, React.createElement("div", {
+    return React.createElement("div", null, React.createElement("button", {
+      className: "ui right floated button icon",
+      onClick: this.onInfoClick
+    }, React.createElement("i", {
+      className: "info circle icon"
+    })), React.createElement("div", {
       className: "ui minimal comments"
-    }, React.createElement("h3", {
+    }, React.createElement("h4", {
       className: "ui dividing header"
-    }, "Esplora, cerca e comanda")), React.createElement(Commander, null));
+    }, "Esplora, cerca e comanda"), React.createElement(Commander, {
+      ref: this.commanderRef
+    })));
   }
 
 } //////////////////////////////////////////////////////////////////////////////////////
@@ -19,6 +38,14 @@ class Commander extends React.Component {
       posts: []
     };
     this.requestPostsOnDate = this.requestPostsOnDate.bind(this);
+    this.parseRequest = this.parseRequest.bind(this);
+  }
+
+  showInfo() {
+    console.log("Show info in commander");
+    this.setNewState({
+      info: true
+    });
   }
 
   parseRequest(req) {
@@ -38,6 +65,8 @@ class Commander extends React.Component {
       if (arg.length > 1) {
         cmd = arg[0];
         arg = arg[1]; //support only one argument
+      } else {
+        arg = "";
       }
     }
 
@@ -46,6 +75,11 @@ class Commander extends React.Component {
       case "aiuto":
         console.log('Aiuto requested');
         this.showHelp();
+        break;
+
+      case "caso":
+        console.log("Random post request:", arg);
+        this.randomPostReq(arg);
         break;
 
       case "clr":
@@ -69,7 +103,7 @@ class Commander extends React.Component {
 
       default:
         console.log('Server search request');
-        this.serverRequest(req);
+        this.serverSearchRequest(req);
         break;
     }
   }
@@ -83,8 +117,15 @@ class Commander extends React.Component {
     let arr = datestr.split('/');
 
     if (arr.length !== 3) {
-      errFn('Data non è nel formato corretto (es. data corretta 23/12/2007)');
-      return;
+      if (datestr.length === 6) {
+        arr = [];
+        arr.push(datestr.slice(0, 2));
+        arr.push(datestr.slice(2, 4));
+        arr.push(datestr.slice(4, 6));
+      } else {
+        errFn('Data non è nel formato corretto (es. data corretta 23/12/2007)');
+        return;
+      }
     }
 
     let gg = parseInt(arr[0]);
@@ -135,18 +176,46 @@ class Commander extends React.Component {
       help: false,
       posts: [],
       error: "",
-      req: ""
+      req: "",
+      lblreq: "",
+      info: false
     });
   }
 
-  serverRequest(cmd) {
-    if (!cmd) {
-      console.log('cmd is empty');
+  randomPostReq(arg) {
+    var ser;
+
+    if (arg) {
+      ser = $.param({
+        "rndonuser": arg
+      });
+    } else {
+      ser = $.param({
+        "rnd": "all"
+      });
+    }
+
+    var url = 'do?' + ser;
+    console.log('POST to ', url);
+    $.post(url, res => {
+      console.log('Res is:', res);
+      var pp = JSON.parse(res);
+      this.setNewState({
+        posts: pp.Posts,
+        lblreq: "comando ",
+        req: ":caso " + arg
+      });
+    });
+  }
+
+  serverSearchRequest(search) {
+    if (!search) {
+      console.log('search is empty');
       return;
     }
 
     var ser = $.param({
-      "req": cmd
+      "req": search
     });
     var url = 'do?' + ser;
     console.log('POST to ', url);
@@ -155,10 +224,9 @@ class Commander extends React.Component {
       var pp = JSON.parse(res);
       this.setNewState({
         posts: pp.Posts,
-        req: cmd
-      }); // pp.Posts.forEach(element => {
-      //console.log(element)
-      // });
+        lblreq: " ricerca di ",
+        req: search
+      });
     });
   }
 
@@ -173,6 +241,7 @@ class Commander extends React.Component {
       var pp = JSON.parse(res);
       this.setNewState({
         posts: pp.Posts,
+        lblreq: "data = ",
         req: this.formatDate(date)
       });
     });
@@ -187,6 +256,7 @@ class Commander extends React.Component {
     if (this.state.posts.length > 0) {
       var date;
       var ser;
+      var opstr = ">";
 
       if (forw) {
         // forward
@@ -202,6 +272,7 @@ class Commander extends React.Component {
         ser = $.param({
           "dateless": date
         });
+        opstr = "<";
       }
 
       var url = 'do?' + ser;
@@ -211,6 +282,7 @@ class Commander extends React.Component {
         var pp = JSON.parse(res);
         this.setNewState({
           posts: pp.Posts,
+          lblreq: " data " + opstr + " ",
           req: this.formatDate(date)
         });
       });
@@ -248,12 +320,13 @@ class Commander extends React.Component {
       id: "respost"
     }, this.state.posts && this.state.posts.length > 0 ? React.createElement("div", null, this.state.req ? React.createElement("div", {
       className: "ui small header"
-    }, "Risultati per: ", React.createElement("i", null, this.state.req)) : null, React.createElement("div", {
+    }, "Risultati ", this.state.lblreq, " ", React.createElement("i", null, this.state.req)) : null, React.createElement("div", {
       className: "comment"
     }, this.state.posts.map(function (post, i) {
       return React.createElement(Post, {
         key: i,
         post: post,
+        doreq: that.parseRequest,
         morePostsOnDate: that.requestPostsOnDate
       });
     })), React.createElement("div", null, React.createElement("button", {
@@ -266,10 +339,15 @@ class Commander extends React.Component {
       onClick: () => this.movePostsOnDate(true)
     }, React.createElement("i", {
       className: "right arrow icon"
-    }), " Avanti"))) : null, React.createElement(Help, {
+    }), " Avanti"))) : React.createElement("div", null, this.state.req ? React.createElement("div", {
+      className: "ui small header"
+    }, "Nessun risultato per ", this.state.lblreq, " ", React.createElement("i", null, this.state.req), ". ", React.createElement("br", null), "Ricorda che i comandi vanno preceduti dai due punti. Per un elenco dei comandi disponibili usa :?") : null), React.createElement(Help, {
       help: this.state.help
     }), React.createElement(Error, {
       err: this.state.error
+    }), React.createElement(Info, {
+      info: this.state.info,
+      doreq: this.parseRequest
     })));
   }
 
@@ -312,11 +390,52 @@ class Help extends React.Component {
       className: "ui message"
     }, React.createElement("div", {
       className: "header"
-    }, "Aiuto"), React.createElement("div", null, "I comandi che si possono utilizzare sono sempre prefissati dai due punti:", React.createElement("ul", null, React.createElement("li", null, React.createElement("b", null, ":aiuto"), React.createElement("br", null), "mostra questa schermata"), React.createElement("li", null, React.createElement("b", null, ":?"), React.createElement("br", null), "mostra questa schermata"), React.createElement("li", null, React.createElement("b", null, ":data"), " ", React.createElement("i", null, "segue una data in formato gg/mm/aaaa."), " ", React.createElement("br", null), "Per esempio, per vedere i post del 27 gennaio 2003 si usa:", React.createElement("br", null), ":data 27/01/2003"), React.createElement("li", null, React.createElement("b", null, ":clr"), React.createElement("br", null), "cancella il risultato"), React.createElement("li", null, React.createElement("i", null, "Parola o frase che non sia un comando"), React.createElement("br", null), "Esegue una ricerca all'interno di tutti posts e ne presenta un risultato limitato.")), "Nei lista dei post \xE8 possibile selezionarne uno cliccando sulla data. Da questo punto si segue lo stream dei messaggi.")) : null);
+    }, "Aiuto"), React.createElement("div", null, "I comandi che si possono utilizzare sono sempre prefissati dai due punti:", React.createElement("ul", null, React.createElement("li", null, React.createElement("b", null, ":aiuto"), React.createElement("br", null), "mostra questa schermata"), React.createElement("li", null, React.createElement("b", null, ":?"), React.createElement("br", null), "mostra questa schermata"), React.createElement("li", null, React.createElement("b", null, ":data"), " ", React.createElement("i", null, "segue una data in formato gg/mm/aaaa."), " ", React.createElement("br", null), "Per esempio, per vedere i post del 27 gennaio 2003 si usa:", React.createElement("br", null), ":data 27/01/2003", React.createElement("br", null), "Va bene anche il formato a 6 caratteri senza separatore:", React.createElement("br", null), ":data 270103"), React.createElement("li", null, React.createElement("b", null, ":clr"), React.createElement("br", null), "cancella il risultato"), React.createElement("li", null, React.createElement("b", null, ":caso"), React.createElement("br", null), React.createElement("i", null, "seguito dal nome di utente"), React.createElement("br", null), "Ritorna dei post casuali relativi as un utente ", React.createElement("br", null), React.createElement("i", null, "senza nulla"), React.createElement("br", null), "Ritorna dei post casuali"), React.createElement("li", null, React.createElement("i", null, "Parola o frase che non sia un comando"), React.createElement("br", null), "Esegue una ricerca all'interno di tutti posts e ne presenta un risultato limitato.")), "Nei lista dei post \xE8 possibile selezionarne uno cliccando sulla data. Da questo punto si segue lo stream dei messaggi.")) : null);
   }
 
 } ///////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////// POST 
+/////////////////////////////////////////////////////////////////////////// INFO
+///////////////////////////////////////////////////////////////////////////////////
+
+
+class Info extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
+
+  render() {
+    return React.createElement("div", null, this.props.info ? React.createElement("div", null, React.createElement("h2", {
+      className: "ui dividing header"
+    }, "Info su..."), React.createElement("a", {
+      onClick: () => {
+        this.props.doreq(":data 080403");
+      }
+    }, React.createElement("div", {
+      className: "ui raised segment"
+    }, React.createElement("p", null, React.createElement("i", null, "Benvenuti Italians Viennesi!Ma che alla pizza eravate cosi pochi? Pochi fan di Beppe o pochi Italians a Vienna?")))), " ", React.createElement("br", null), React.createElement("p", null, "\xC8 stato questo il primo post nella sezione di Vienna di IOL. Parliamo dell'8 aprile 2003. Undici anni dopo: "), React.createElement("a", {
+      onClick: () => {
+        this.props.doreq(":data 061014");
+      }
+    }, React.createElement("div", {
+      className: "ui raised segment"
+    }, React.createElement("p", null, React.createElement("i", null, "beh, allora lo testo subito!! ")))), React.createElement("br", null), React.createElement("p", null, "Si tratta dell'ultimo messaggio salvato dopo la scomparsa della sezione di Vienna di IOL. Il messaggio fu scritto il 6 ottobre 2014."), React.createElement("p", null, "In mezzo a questi due post, la bellezza di 20 803 messaggi che hanno rischiato di finire nell'oblio. Ma con questo progetto ", React.createElement("b", null, "IOL Vienna Vintage"), " ho voluto recuperare tutti messaggi del forum IOL sezione di Vienna rendendoli accessibili a chiunque."), React.createElement("p", null, "All'interno si trovano molte informazioni che riguardano Vienna. Ma \xE8 anche uno spaccato di come, in quel periodo, alcuni italiani che si sono trasferiti a Vienna comunicavano e scambiavano opinioni sui pi\xF9 vari argomenti. Il forum era anche un punto di ritrovo per organizzare eventi reali in citt\xE0."), React.createElement("p", null, "Nel frattempo i modi di comunicare sono decisamente cambiati e la sezione di Vienna di IOL, come altri forum, ha seguito un lento e inesorabile declino fino alla definitiva chiusura in un momento buio e imprecisato di qualche anno fa."), React.createElement("p", null, "Ora ", React.createElement("b", null, "IOL Vienna Vintage"), " offre la possibilit\xE0 di navigare in tutta quella miriade di messaggi, senza per\xF2 la possibilit\xE0 di aggiungerne di nuovi."), React.createElement("p", null, "Se questa necessit\xE0 ci fosse o ci fosse stata, il forum non sarebbe di certo morto."), React.createElement("p", null, "Per inizare questo viaggio nel passato basta inserire un comando oppure una parola da cercare."), React.createElement("p", null, "Per esempio con la parola ", React.createElement("a", {
+      onClick: () => {
+        this.props.doreq("chi cerca trova");
+      }
+    }, "chi cerca trova"), ". I comandi a disposizione si hanno con ", React.createElement("a", {
+      onClick: () => {
+        this.props.doreq(":?");
+      }
+    }, ":?")), React.createElement("p", null, "Buon divertimento! Vostro ", React.createElement("a", {
+      onClick: () => {
+        this.props.doreq(":caso aaaasmile");
+      }
+    }, "[aaaasmile]"))) : null);
+  }
+
+} ///////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////// POST
 ///////////////////////////////////////////////////////////////////////////////////
 
 
@@ -361,15 +480,25 @@ class Post extends React.Component {
     }, React.createElement("div", {
       className: "content"
     }, React.createElement("div", {
+      className: "ui two column grid"
+    }, React.createElement("div", {
+      className: "column"
+    }, React.createElement("div", {
       className: "author"
-    }, this.props.post.UserName), React.createElement("div", {
+    }, React.createElement("a", {
+      onClick: () => {
+        this.props.doreq(":caso " + this.props.post.UserName);
+      }
+    }, this.props.post.UserName))), React.createElement("div", {
+      className: "column"
+    }, React.createElement("div", {
       className: "metadata"
     }, React.createElement("a", {
       className: "date",
       onClick: () => {
         this.props.morePostsOnDate(this.props.post.Date);
       }
-    }, this.formatDate(this.props.post.Date))), React.createElement("div", {
+    }, this.formatDate(this.props.post.Date))))), React.createElement("div", {
       className: "text"
     }, this.props.post.Content)));
   }
