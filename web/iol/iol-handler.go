@@ -58,7 +58,6 @@ func handlePost(w http.ResponseWriter, req *http.Request) {
 		doDbRequestWithPosts(w, req, func() (*db.IolPostResp, error) {
 			return db.PostsOnDate(val[0], false, false)
 		})
-		//doPostsOnDate(w, req, val[0], false, false)
 		return
 	}
 	if val, ok := q["dateless"]; ok {
@@ -66,12 +65,10 @@ func handlePost(w http.ResponseWriter, req *http.Request) {
 		doDbRequestWithPosts(w, req, func() (*db.IolPostResp, error) {
 			return db.PostsOnDate(val[0], false, true)
 		})
-		//doPostsOnDate(w, req, val[0], false, true)
 		return
 	}
 	if val, ok := q["datemore"]; ok {
 		log.Println("DO date more", val)
-		//doPostsOnDate(w, req, val[0], true, false)
 		doDbRequestWithPosts(w, req, func() (*db.IolPostResp, error) {
 			return db.PostsOnDate(val[0], true, false)
 		})
@@ -80,9 +77,16 @@ func handlePost(w http.ResponseWriter, req *http.Request) {
 
 	if val, ok := q["rndonuser"]; ok {
 		log.Println("DO random post from user", val)
-		//doRandomPostFromUser(w, req, val[0])
 		doDbRequestWithPosts(w, req, func() (*db.IolPostResp, error) {
 			return db.CasoPostfromUser(val[0])
+		})
+		return
+	}
+
+	if val, ok := q["rnd"]; ok {
+		log.Println("DO random post", val)
+		doDbRequestWithPosts(w, req, func() (*db.IolPostResp, error) {
+			return db.CasoPost()
 		})
 		return
 	}
@@ -119,45 +123,6 @@ func handleIndexGet(w http.ResponseWriter, req *http.Request) {
 		log.Fatal(err)
 	}
 }
-
-// func doPostsOnDate(w http.ResponseWriter, req *http.Request, val string, more bool, less bool) {
-// 	pp, err := db.PostsOnDate(val, more, less)
-// 	if err != nil {
-// 		log.Println("DB error ", err)
-// 		w.WriteHeader(http.StatusInternalServerError)
-// 		w.Write([]byte("500 - Internal error"))
-// 		return
-// 	}
-
-// 	js, err := json.Marshal(pp)
-// 	if err != nil {
-// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-// 		return
-// 	}
-
-// 	fmt.Fprint(w, string(js))
-// 	return
-// }
-
-// func doSearchPlainText(w http.ResponseWriter, req *http.Request, val string) {
-// 	pp, err := db.MatchText(val)
-// 	if err != nil {
-// 		log.Println("DB error ", err)
-// 		w.WriteHeader(http.StatusInternalServerError)
-// 		w.Write([]byte("500 - Internal error"))
-// 		return
-// 	}
-
-// 	js, err := json.Marshal(pp)
-// 	if err != nil {
-// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-// 		return
-// 	}
-
-// 	fmt.Fprint(w, string(js))
-// 	return
-
-// }
 
 func doDbRequestWithPosts(w http.ResponseWriter, req *http.Request, f1 func() (*db.IolPostResp, error)) {
 	pp, err := f1()

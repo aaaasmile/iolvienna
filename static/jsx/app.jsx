@@ -38,6 +38,8 @@ class Commander extends React.Component {
       if (arg.length > 1) {
         cmd = arg[0]
         arg = arg[1] //support only one argument
+      } else {
+        arg = ""
       }
     }
 
@@ -66,7 +68,7 @@ class Commander extends React.Component {
         break
       default:
         console.log('Server search request')
-        this.serverRequest(req)
+        this.serverSearchRequest(req)
         break
     }
   }
@@ -115,35 +117,37 @@ class Commander extends React.Component {
   }
 
   clearResult() {
-    this.setState({ help: false, posts: [], error: "", req: "" })
+    this.setState({ help: false, posts: [], error: "", req: "", lblreq: "" })
   }
 
   randomPostReq(arg) {
-    var ser = $.param({ "rndonuser": arg })
+    var ser
+    if (arg) {
+      ser = $.param({ "rndonuser": arg })
+    } else {
+      ser = $.param({ "rnd": "all" })
+    }
     var url = 'do?' + ser
     console.log('POST to ', url)
     $.post(url, res => {
       console.log('Res is:', res)
       var pp = JSON.parse(res)
-      this.setNewState({ posts: pp.Posts, req: (":caso " + arg) })
+      this.setNewState({ posts: pp.Posts, lblreq: "comando ", req: (":caso " + arg) })
     })
   }
 
-  serverRequest(cmd) {
-    if (!cmd) {
-      console.log('cmd is empty')
+  serverSearchRequest(search) {
+    if (!search) {
+      console.log('search is empty')
       return
     }
-    var ser = $.param({ "req": cmd })
+    var ser = $.param({ "req": search })
     var url = 'do?' + ser
     console.log('POST to ', url)
     $.post(url, res => {
       console.log('Res is:', res)
       var pp = JSON.parse(res)
-      this.setNewState({ posts: pp.Posts, req: cmd })
-      // pp.Posts.forEach(element => {
-      //console.log(element)
-      // });
+      this.setNewState({ posts: pp.Posts, lblreq: " ricerca di ", req: search })
     })
   }
 
@@ -154,7 +158,7 @@ class Commander extends React.Component {
     $.post(url, res => {
       console.log('Res is:', res)
       var pp = JSON.parse(res)
-      this.setNewState({ posts: pp.Posts, req: this.formatDate(date) })
+      this.setNewState({ posts: pp.Posts, lblreq: "data = ", req: this.formatDate(date) })
     })
   }
 
@@ -167,6 +171,7 @@ class Commander extends React.Component {
     if (this.state.posts.length > 0) {
       var date
       var ser
+      var opstr = ">"
       if (forw) {
         // forward
         let last = this.state.posts[this.state.posts.length - 1]
@@ -177,13 +182,14 @@ class Commander extends React.Component {
         let first = this.state.posts[0]
         date = first.Date
         ser = $.param({ "dateless": date })
+        opstr = "<"
       }
       var url = 'do?' + ser
       console.log('POST to ', url)
       $.post(url, res => {
         //console.log('Res is:', res)
         var pp = JSON.parse(res)
-        this.setNewState({ posts: pp.Posts, req: this.formatDate(date) })
+        this.setNewState({ posts: pp.Posts, lblreq: " data " + opstr + " ", req: this.formatDate(date) })
       })
     }
   }
@@ -213,7 +219,7 @@ class Commander extends React.Component {
             <div>
               {this.state.req ?
                 <div className="ui small header">
-                  Risultati per: <i>{this.state.req}</i>
+                  Risultati {this.state.lblreq} <i>{this.state.req}</i>
                 </div>
                 : null}
               <div className="comment">
@@ -235,7 +241,7 @@ class Commander extends React.Component {
             : <div>
               {this.state.req ?
                 <div className="ui small header">
-                  Nessun risultato per: <i>{this.state.req}</i>. <br />Ricorda che i comandi vanno preceduti dai due punti. Per un elenco dei comandi disponibili usa :?.
+                  Nessun risultato per {this.state.lblreq} <i>{this.state.req}</i>. <br />Ricorda che i comandi vanno preceduti dai due punti. Per un elenco dei comandi disponibili usa :?
                 </div>
                 : null}
             </div>
@@ -296,7 +302,9 @@ class Help extends React.Component {
                 <li><b>:?</b><br />mostra questa schermata</li>
                 <li><b>:data</b> <i>segue una data in formato gg/mm/aaaa.</i> <br />Per esempio, per vedere i post del 27 gennaio 2003 si usa:<br />:data 27/01/2003</li>
                 <li><b>:clr</b><br />cancella il risultato</li>
-                <li><b>:caso</b><br /> <i>seguito dal nome di utente</i><br />Ritorna dei post casuali relativi as un utente</li>
+                <li><b>:caso</b><br />
+                  <i>seguito dal nome di utente</i><br />Ritorna dei post casuali relativi as un utente <br />
+                  <i>senza nulla</i><br />Ritorna dei post casuali</li>
                 <li><i>Parola o frase che non sia un comando</i><br />Esegue una ricerca all'interno di tutti posts e ne presenta un risultato limitato.</li>
               </ul>
               Nei lista dei post è possibile selezionarne uno cliccando sulla data. Da questo punto si segue lo stream dei messaggi.
