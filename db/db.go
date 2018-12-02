@@ -79,6 +79,36 @@ func PostsOnDate(dateText string, more bool, less bool) (*IolPostResp, error) {
 	return res, nil
 }
 
+func CasoPostfromUser(user string) (*IolPostResp, error) {
+	q := `SELECT id from iol_post where user_name = ?;`
+	rows, err := connDb.Query(q, user)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+	res := &IolPostResp{
+		Posts: []IolPost{},
+	}
+	var rowid int
+	ids := []int{}
+	for rows.Next() {
+		if err := rows.Scan(&rowid); err != nil {
+			return nil, err
+		}
+		ids = append(ids, rowid)
+	}
+	if len(ids) > 0 {
+		//log.Printf("Found ids: %v (len %d)", ids, len(ids))
+		shuffle(ids)
+		//log.Printf("After shuffle ids: %v (len %d)", ids, len(ids))
+		prepareSlice(ids, res)
+		log.Printf("Prepared %d posts\n", len(res.Posts))
+	}
+
+	return res, nil
+}
+
 func MatchText(textMatch string) (*IolPostResp, error) {
 	q := `SELECT playsrowid from playsearch WHERE text MATCH ?;`
 

@@ -67,6 +67,12 @@ func handlePost(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	if val, ok := q["rndonuser"]; ok {
+		log.Println("DO random post from user", val)
+		doRandomPostFromUser(w, req, val[0])
+		return
+	}
+
 	log.Println("Command invalid", req.RequestURI)
 	w.WriteHeader(http.StatusBadRequest)
 	w.Write([]byte("400 - Bad Request"))
@@ -121,6 +127,26 @@ func doPostsOnDate(w http.ResponseWriter, req *http.Request, val string, more bo
 
 func doSearchPlainText(w http.ResponseWriter, req *http.Request, val string) {
 	pp, err := db.MatchText(val)
+	if err != nil {
+		log.Println("DB error ", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("500 - Internal error"))
+		return
+	}
+
+	js, err := json.Marshal(pp)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Fprint(w, string(js))
+	return
+
+}
+
+func doRandomPostFromUser(w http.ResponseWriter, req *http.Request, val string) {
+	pp, err := db.CasoPostfromUser(val)
 	if err != nil {
 		log.Println("DB error ", err)
 		w.WriteHeader(http.StatusInternalServerError)

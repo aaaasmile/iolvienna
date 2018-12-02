@@ -47,6 +47,10 @@ class Commander extends React.Component {
         console.log('Aiuto requested')
         this.showHelp()
         break
+      case "caso":
+        console.log("Random post request:", arg)
+        this.randomPostReq(arg)
+        break
       case "clr":
         this.clearResult()
         break
@@ -112,6 +116,17 @@ class Commander extends React.Component {
 
   clearResult() {
     this.setState({ help: false, posts: [], error: "", req: "" })
+  }
+
+  randomPostReq(arg) {
+    var ser = $.param({ "rndonuser": arg })
+    var url = 'do?' + ser
+    console.log('POST to ', url)
+    $.post(url, res => {
+      console.log('Res is:', res)
+      var pp = JSON.parse(res)
+      this.setNewState({ posts: pp.Posts, req: (":caso " + arg) })
+    })
   }
 
   serverRequest(cmd) {
@@ -217,7 +232,13 @@ class Commander extends React.Component {
                 </button>
               </div>
             </div>
-            : null
+            : <div>
+              {this.state.req ?
+                <div className="ui small header">
+                  Nessun risultato per: <i>{this.state.req}</i>. <br />Ricorda che i comandi vanno preceduti dai due punti. Per un elenco dei comandi disponibili usa :?.
+                </div>
+                : null}
+            </div>
           }
           <Help help={this.state.help}></Help>
           <Error err={this.state.error}></Error>
@@ -275,6 +296,7 @@ class Help extends React.Component {
                 <li><b>:?</b><br />mostra questa schermata</li>
                 <li><b>:data</b> <i>segue una data in formato gg/mm/aaaa.</i> <br />Per esempio, per vedere i post del 27 gennaio 2003 si usa:<br />:data 27/01/2003</li>
                 <li><b>:clr</b><br />cancella il risultato</li>
+                <li><b>:caso</b><br /> <i>seguito dal nome di utente</i><br />Ritorna dei post casuali relativi as un utente</li>
                 <li><i>Parola o frase che non sia un comando</i><br />Esegue una ricerca all'interno di tutti posts e ne presenta un risultato limitato.</li>
               </ul>
               Nei lista dei post è possibile selezionarne uno cliccando sulla data. Da questo punto si segue lo stream dei messaggi.
