@@ -362,13 +362,17 @@ class Info extends React.Component {
         {this.props.info ?
           <div>
             <h2 className="ui dividing header">Info su...</h2>
-            <div className="ui raised segment">
-              <p><i>Benvenuti Italians Viennesi!Ma che alla pizza eravate cosi pochi? Pochi fan di Beppe o pochi Italians a Vienna?</i></p>
-            </div>
+            <a onClick={() => { this.props.doreq(":data 080403") }}>
+              <div className="ui raised segment">
+                <p><i>Benvenuti Italians Viennesi!Ma che alla pizza eravate cosi pochi? Pochi fan di Beppe o pochi Italians a Vienna?</i></p>
+              </div>
+            </a> <br />
             <p>È stato questo il primo post nella sezione di Vienna di IOL. Parliamo dell'8 aprile 2003. Undici anni dopo: </p>
-            <div className="ui raised segment">
-              <p><i>beh, allora lo testo subito!! </i></p>
-            </div>
+            <a onClick={() => { this.props.doreq(":data 061014") }}>
+              <div className="ui raised segment">
+                <p><i>beh, allora lo testo subito!! </i></p>
+              </div>
+            </a><br />
             <p>Si tratta dell'ultimo messaggio salvato dopo la scomparsa della sezione di Vienna di IOL. Il messaggio fu scritto il 6 ottobre 2014.</p>
             <p>In mezzo a questi due post, la bellezza di 20 803 messaggi che hanno rischiato di finire nell'oblio.
                Ma con questo progetto <b>IOL Vienna Vintage</b> ho voluto recuperare tutti messaggi del forum IOL sezione di Vienna rendendoli accessibili a chiunque.</p>
@@ -424,7 +428,7 @@ class Post extends React.Component {
     return (
       <div className="ui postId">
         <div className="content">
-          <div className="author"><a className="date" onClick={() => {this.props.doreq(":caso " + this.props.post.UserName)}}>{this.props.post.UserName}</a></div>
+          <div className="author"><a className="date" onClick={() => { this.props.doreq(":caso " + this.props.post.UserName) }}>{this.props.post.UserName}</a></div>
           <div className="metadata">
             <a className="date" onClick={() => {
               this.props.morePostsOnDate(this.props.post.Date)
