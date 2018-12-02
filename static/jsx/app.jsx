@@ -1,11 +1,24 @@
 class App extends React.Component {
+  constructor(props) {
+    super(props);
+    console.log("APP is build in constructor")
+    this.onInfoClick = this.onInfoClick.bind(this)
+    this.commanderRef = React.createRef();
+  }
+
+  onInfoClick() {
+    console.log("Info clicked in APP")
+    this.commanderRef.current.showInfo();
+  }
+
   render() {
     return (
       <div>
+        <button className="ui right floated button icon" onClick={this.onInfoClick}><i className="info circle icon"></i></button>
         <div className="ui minimal comments">
-          <h3 className="ui dividing header">Esplora, cerca e comanda</h3>
+          <h4 className="ui dividing header">Esplora, cerca e comanda</h4>
+          <Commander ref={this.commanderRef}></Commander>
         </div>
-        <Commander></Commander>
       </div>
     )
   }
@@ -22,6 +35,11 @@ class Commander extends React.Component {
       posts: []
     };
     this.requestPostsOnDate = this.requestPostsOnDate.bind(this)
+  }
+
+  showInfo() {
+    console.log("Show info in commander")
+    this.setNewState({ info: true })
   }
 
   parseRequest(req) {
@@ -124,7 +142,7 @@ class Commander extends React.Component {
   }
 
   clearResult() {
-    this.setState({ help: false, posts: [], error: "", req: "", lblreq: "" })
+    this.setState({ help: false, posts: [], error: "", req: "", lblreq: "", info: false })
   }
 
   randomPostReq(arg) {
@@ -255,6 +273,7 @@ class Commander extends React.Component {
           }
           <Help help={this.state.help}></Help>
           <Error err={this.state.error}></Error>
+          <Info info={this.state.info}></Info>
         </div>
       </div>
     )
@@ -327,7 +346,44 @@ class Help extends React.Component {
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////// POST 
+/////////////////////////////////////////////////////////////////////////// INFO
+///////////////////////////////////////////////////////////////////////////////////
+
+class Info extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
+
+  render() {
+    return (
+      <div>
+        {this.props.info ?
+          <div>
+            <h2 className="ui dividing header">Info su...</h2>
+            <p><i>Benvenuti Italians Viennesi!Ma che alla pizza eravate cosi pochi? Pochi fan di Beppe o pochi Italians a Vienna?</i></p>
+            <p>È stato questo il primo post nella sezione di Vienna di IOL. Parliamo dell'8 aprile 2003. Undici anni dopo: </p>
+            <p><i>beh, allora lo testo subito!! </i></p>
+            <p>Si tratta dell'ultimo messaggio salvato dopo la scomparsa della sezione di Vienna di IOL. Il messaggio fu scritto il 6 ottobre 2014.
+               In mezzo a questi due post, la bellezza di 20 803 messaggi che hanno rischiato di finire nell'oblio. 
+               Ma con questo progetto <b>IOL Vienna Vintage</b> ho voluto recuperare tutti messaggi del forum IOL sezione di Vienna rendendoli accessibili a chiunque.</p>
+            <p>All'interno si trovano molte informazioni che riguardano Vienna. Ma è anche uno spaccato di come, in quel periodo, alcuni italiani che si sono trasferiti a Vienna 
+              comunicavano e scambiavano opinioni sui più vari argomenti. Il forum era anche un punto di ritrovo per organizzare eventi reali in città.</p>
+            <p>Nel frattempo i modi di comunicare sono decisamente cambiati e la sezione di Vienna di IOL, come altri forum, ha seguito un lento e inesorabile declino 
+              fino alla definitiva chiusura in un momento buio e imprecisato di qualche anno fa.</p>
+            <p>Ora <b>IOL Vienna Vintage</b> offre la possibilità di navigare in tutta quella miriade di messaggi, senza però la possibilità di aggiungerne di nuovi.</p>
+            <p>Se questa necessità ci fosse o ci fosse stata, il forum non sarebbe di certo morto.</p>
+            <p>Per inizare questo viaggio nel passato basta inserire un comando oppure una parola da cercare. I comandi a disposizione si hanno con :?</p>
+            <p>Buon divertimento! Vostro [aaaasmile]</p>
+          </div>
+          : null}
+      </div>
+    )
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////// POST
 ///////////////////////////////////////////////////////////////////////////////////
 
 class Post extends React.Component {
