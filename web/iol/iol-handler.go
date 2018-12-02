@@ -47,29 +47,43 @@ func handlePost(w http.ResponseWriter, req *http.Request) {
 	log.Println(q) // interface: do?req=<string>
 	if val, ok := q["req"]; ok {
 		log.Println("DO request", val)
-		doSearchPlainText(w, req, val[0])
+		doDbRequestWithPosts(w, req, func() (*db.IolPostResp, error) {
+			return db.MatchText(val[0])
+		})
 		return
 	}
 
 	if val, ok := q["date"]; ok {
 		log.Println("DO date", val)
-		doPostsOnDate(w, req, val[0], false, false)
+		doDbRequestWithPosts(w, req, func() (*db.IolPostResp, error) {
+			return db.PostsOnDate(val[0], false, false)
+		})
+		//doPostsOnDate(w, req, val[0], false, false)
 		return
 	}
 	if val, ok := q["dateless"]; ok {
 		log.Println("DO date less", val)
-		doPostsOnDate(w, req, val[0], false, true)
+		doDbRequestWithPosts(w, req, func() (*db.IolPostResp, error) {
+			return db.PostsOnDate(val[0], false, true)
+		})
+		//doPostsOnDate(w, req, val[0], false, true)
 		return
 	}
 	if val, ok := q["datemore"]; ok {
 		log.Println("DO date more", val)
-		doPostsOnDate(w, req, val[0], true, false)
+		//doPostsOnDate(w, req, val[0], true, false)
+		doDbRequestWithPosts(w, req, func() (*db.IolPostResp, error) {
+			return db.PostsOnDate(val[0], true, false)
+		})
 		return
 	}
 
 	if val, ok := q["rndonuser"]; ok {
 		log.Println("DO random post from user", val)
-		doRandomPostFromUser(w, req, val[0])
+		//doRandomPostFromUser(w, req, val[0])
+		doDbRequestWithPosts(w, req, func() (*db.IolPostResp, error) {
+			return db.CasoPostfromUser(val[0])
+		})
 		return
 	}
 
@@ -106,47 +120,47 @@ func handleIndexGet(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func doPostsOnDate(w http.ResponseWriter, req *http.Request, val string, more bool, less bool) {
-	pp, err := db.PostsOnDate(val, more, less)
-	if err != nil {
-		log.Println("DB error ", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("500 - Internal error"))
-		return
-	}
+// func doPostsOnDate(w http.ResponseWriter, req *http.Request, val string, more bool, less bool) {
+// 	pp, err := db.PostsOnDate(val, more, less)
+// 	if err != nil {
+// 		log.Println("DB error ", err)
+// 		w.WriteHeader(http.StatusInternalServerError)
+// 		w.Write([]byte("500 - Internal error"))
+// 		return
+// 	}
 
-	js, err := json.Marshal(pp)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+// 	js, err := json.Marshal(pp)
+// 	if err != nil {
+// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+// 		return
+// 	}
 
-	fmt.Fprint(w, string(js))
-	return
-}
+// 	fmt.Fprint(w, string(js))
+// 	return
+// }
 
-func doSearchPlainText(w http.ResponseWriter, req *http.Request, val string) {
-	pp, err := db.MatchText(val)
-	if err != nil {
-		log.Println("DB error ", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("500 - Internal error"))
-		return
-	}
+// func doSearchPlainText(w http.ResponseWriter, req *http.Request, val string) {
+// 	pp, err := db.MatchText(val)
+// 	if err != nil {
+// 		log.Println("DB error ", err)
+// 		w.WriteHeader(http.StatusInternalServerError)
+// 		w.Write([]byte("500 - Internal error"))
+// 		return
+// 	}
 
-	js, err := json.Marshal(pp)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+// 	js, err := json.Marshal(pp)
+// 	if err != nil {
+// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+// 		return
+// 	}
 
-	fmt.Fprint(w, string(js))
-	return
+// 	fmt.Fprint(w, string(js))
+// 	return
 
-}
+// }
 
-func doRandomPostFromUser(w http.ResponseWriter, req *http.Request, val string) {
-	pp, err := db.CasoPostfromUser(val)
+func doDbRequestWithPosts(w http.ResponseWriter, req *http.Request, f1 func() (*db.IolPostResp, error)) {
+	pp, err := f1()
 	if err != nil {
 		log.Println("DB error ", err)
 		w.WriteHeader(http.StatusInternalServerError)
