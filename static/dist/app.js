@@ -39,6 +39,7 @@ class Commander extends React.Component {
     };
     this.requestPostsOnDate = this.requestPostsOnDate.bind(this);
     this.parseRequest = this.parseRequest.bind(this);
+    this.randomPostReq = this.randomPostReq.bind(this);
   }
 
   showInfo() {
@@ -84,6 +85,11 @@ class Commander extends React.Component {
 
       case "clr":
         this.clearResult();
+        break;
+
+      case "u":
+      case "utenti":
+        this.usersReq();
         break;
 
       case "data":
@@ -175,6 +181,9 @@ class Commander extends React.Component {
     this.setState({
       help: false,
       posts: [],
+      ispost: false,
+      users: [],
+      isuser: false,
       error: "",
       req: "",
       lblreq: "",
@@ -201,9 +210,28 @@ class Commander extends React.Component {
       console.log('Res is:', res);
       var pp = JSON.parse(res);
       this.setNewState({
+        ispost: true,
         posts: pp.Posts,
         lblreq: "comando ",
         req: ":caso " + arg
+      });
+    });
+  }
+
+  usersReq() {
+    let ser = $.param({
+      "users": "all"
+    });
+    var url = 'do?' + ser;
+    console.log('POST to ', url);
+    $.post(url, res => {
+      console.log('Res is:', res);
+      var pp = JSON.parse(res);
+      this.setNewState({
+        isuser: true,
+        users: pp.Users,
+        lblreq: "comando ",
+        req: ":utenti"
       });
     });
   }
@@ -223,6 +251,7 @@ class Commander extends React.Component {
       console.log('Res is:', res);
       var pp = JSON.parse(res);
       this.setNewState({
+        ispost: true,
         posts: pp.Posts,
         lblreq: " ricerca di ",
         req: search
@@ -240,6 +269,7 @@ class Commander extends React.Component {
       console.log('Res is:', res);
       var pp = JSON.parse(res);
       this.setNewState({
+        ispost: true,
         posts: pp.Posts,
         lblreq: "data = ",
         req: this.formatDate(date)
@@ -281,6 +311,7 @@ class Commander extends React.Component {
         //console.log('Res is:', res)
         var pp = JSON.parse(res);
         this.setNewState({
+          ispost: true,
           posts: pp.Posts,
           lblreq: " data " + opstr + " ",
           req: this.formatDate(date)
@@ -318,7 +349,7 @@ class Commander extends React.Component {
     }))), React.createElement("div", {
       className: "ui",
       id: "respost"
-    }, this.state.posts && this.state.posts.length > 0 ? React.createElement("div", null, this.state.req ? React.createElement("div", {
+    }, this.state.posts && this.state.posts.length > 0 && this.state.ispost ? React.createElement("div", null, this.state.req ? React.createElement("div", {
       className: "ui small header"
     }, "Risultati ", this.state.lblreq, " ", React.createElement("i", null, this.state.req)) : null, React.createElement("div", {
       className: "comment"
@@ -339,7 +370,7 @@ class Commander extends React.Component {
       onClick: () => this.movePostsOnDate(true)
     }, React.createElement("i", {
       className: "right arrow icon"
-    }), " Avanti"))) : React.createElement("div", null, this.state.req ? React.createElement("div", {
+    }), " Avanti"))) : React.createElement("div", null, this.state.req && this.state.ispost ? React.createElement("div", {
       className: "ui small header"
     }, "Nessun risultato per ", this.state.lblreq, " ", React.createElement("i", null, this.state.req), ". ", React.createElement("br", null), "Ricorda che i comandi vanno preceduti dai due punti. Per un elenco dei comandi disponibili usa :?") : null), React.createElement(Help, {
       help: this.state.help
@@ -348,7 +379,41 @@ class Commander extends React.Component {
     }), React.createElement(Info, {
       info: this.state.info,
       doreq: this.parseRequest
+    }), React.createElement(Users, {
+      users: this.state,
+      rndOnUser: this.randomPostReq
     })));
+  }
+
+} ///////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////// USERS
+///////////////////////////////////////////////////////////////////////////////////
+
+
+class Users extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    var that = this;
+    this.state = this.props.users; //console.log("Users state:", this.state)
+
+    return React.createElement("div", {
+      id: "users"
+    }, this.state.users && this.state.users.length > 0 ? React.createElement("div", {
+      className: "ui ordered list"
+    }, this.state.users.map(function (user, i) {
+      return React.createElement("a", {
+        key: i,
+        className: "item",
+        onClick: () => {
+          that.props.rndOnUser(user.UserName);
+        }
+      }, user.UserName, " ", user.NumMsg, " messaggi");
+    })) : React.createElement("div", null, this.state.req && this.state.isuser ? React.createElement("div", {
+      className: "ui small header"
+    }, "Nessun risultato per il comando ", this.state.lblreq, " ", React.createElement("i", null, this.state.req), ".") : null));
   }
 
 } ///////////////////////////////////////////////////////////////////////////////////
@@ -363,13 +428,13 @@ class Error extends React.Component {
   }
 
   render() {
-    return React.createElement("div", {
+    return React.createElement("div", null, this.props.err ? React.createElement("div", {
       id: "errMsg"
-    }, this.props.err ? React.createElement("div", {
+    }, React.createElement("div", {
       className: "ui error message"
     }, React.createElement("div", {
       className: "header"
-    }, "Errore"), React.createElement("div", null, this.props.err)) : null);
+    }, "Errore"), React.createElement("div", null, this.props.err))) : null);
   }
 
 } ///////////////////////////////////////////////////////////////////////////////////
@@ -384,13 +449,13 @@ class Help extends React.Component {
   }
 
   render() {
-    return React.createElement("div", {
+    return React.createElement("div", null, this.props.help ? React.createElement("div", {
       id: "helpid"
-    }, this.props.help ? React.createElement("div", {
+    }, React.createElement("div", {
       className: "ui message"
     }, React.createElement("div", {
       className: "header"
-    }, "Aiuto"), React.createElement("div", null, "I comandi che si possono utilizzare sono sempre prefissati dai due punti:", React.createElement("ul", null, React.createElement("li", null, React.createElement("b", null, ":aiuto"), React.createElement("br", null), "mostra questa schermata"), React.createElement("li", null, React.createElement("b", null, ":?"), React.createElement("br", null), "mostra questa schermata"), React.createElement("li", null, React.createElement("b", null, ":data"), " ", React.createElement("i", null, "segue una data in formato gg/mm/aaaa."), " ", React.createElement("br", null), "Per esempio, per vedere i post del 27 gennaio 2003 si usa:", React.createElement("br", null), ":data 27/01/2003", React.createElement("br", null), "Va bene anche il formato a 6 caratteri senza separatore:", React.createElement("br", null), ":data 270103"), React.createElement("li", null, React.createElement("b", null, ":clr"), React.createElement("br", null), "cancella il risultato"), React.createElement("li", null, React.createElement("b", null, ":caso"), React.createElement("br", null), React.createElement("i", null, "seguito dal nome di utente"), React.createElement("br", null), "Ritorna dei post casuali relativi as un utente ", React.createElement("br", null), React.createElement("i", null, "senza nulla"), React.createElement("br", null), "Ritorna dei post casuali"), React.createElement("li", null, React.createElement("i", null, "Parola o frase che non sia un comando"), React.createElement("br", null), "Esegue una ricerca all'interno di tutti posts e ne presenta un risultato limitato.")), "Nei lista dei post \xE8 possibile selezionarne uno cliccando sulla data. Da questo punto si segue lo stream dei messaggi.")) : null);
+    }, "Aiuto"), React.createElement("div", null, "I comandi che si possono utilizzare sono sempre prefissati dai due punti:", React.createElement("ul", null, React.createElement("li", null, React.createElement("b", null, ":aiuto"), React.createElement("br", null), "mostra questa schermata"), React.createElement("li", null, React.createElement("b", null, ":?"), React.createElement("br", null), "mostra questa schermata"), React.createElement("li", null, React.createElement("b", null, ":data"), " ", React.createElement("i", null, "segue una data in formato gg/mm/aaaa."), " ", React.createElement("br", null), "Per esempio, per vedere i post del 27 gennaio 2003 si usa:", React.createElement("br", null), ":data 27/01/2003", React.createElement("br", null), "Va bene anche il formato a 6 caratteri senza separatore:", React.createElement("br", null), ":data 270103"), React.createElement("li", null, React.createElement("b", null, ":clr"), React.createElement("br", null), "cancella il risultato"), React.createElement("li", null, React.createElement("b", null, ":utenti"), React.createElement("br", null), "mostra l'elenco delgi utenti che hanno scritto messaggi"), React.createElement("li", null, React.createElement("b", null, ":u"), React.createElement("br", null), "mostra l'elenco delgi utenti che hanno scritto messaggi"), React.createElement("li", null, React.createElement("b", null, ":caso"), React.createElement("br", null), React.createElement("i", null, "seguito dal nome di utente"), React.createElement("br", null), "Ritorna dei post casuali relativi as un utente ", React.createElement("br", null), React.createElement("i", null, "senza nulla"), React.createElement("br", null), "Ritorna dei post casuali"), React.createElement("li", null, React.createElement("i", null, "Parola o frase che non sia un comando"), React.createElement("br", null), "Esegue una ricerca all'interno di tutti posts e ne presenta un risultato limitato.")), "Nei lista dei post \xE8 possibile selezionarne uno cliccando sulla data. Da questo punto si segue lo stream dei messaggi."))) : null);
   }
 
 } ///////////////////////////////////////////////////////////////////////////////////
