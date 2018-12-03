@@ -75,6 +75,9 @@ class Commander extends React.Component {
       case "clr":
         this.clearResult()
         break
+      case "utenti":
+        this.usersReq()
+        break;
       case "data":
         console.log('Date post request')
         let ddreq = this.makeDateForReq(arg, err => {
@@ -143,7 +146,7 @@ class Commander extends React.Component {
   }
 
   clearResult() {
-    this.setState({ help: false, posts: [], error: "", req: "", lblreq: "", info: false })
+    this.setState({ help: false, posts: [], ispost: false, users: [], isuser: false, error: "", req: "", lblreq: "", info: false })
   }
 
   randomPostReq(arg) {
@@ -158,7 +161,18 @@ class Commander extends React.Component {
     $.post(url, res => {
       console.log('Res is:', res)
       var pp = JSON.parse(res)
-      this.setNewState({ posts: pp.Posts, lblreq: "comando ", req: (":caso " + arg) })
+      this.setNewState({ ispost: true, posts: pp.Posts, lblreq: "comando ", req: (":caso " + arg) })
+    })
+  }
+
+  usersReq() {
+    let ser = $.param({ "users": "all" })
+    var url = 'do?' + ser
+    console.log('POST to ', url)
+    $.post(url, res => {
+      console.log('Res is:', res)
+      var pp = JSON.parse(res)
+      this.setNewState({ isuser: true, users: pp.Users, lblreq: "comando ", req: (":utenti") })
     })
   }
 
@@ -173,7 +187,7 @@ class Commander extends React.Component {
     $.post(url, res => {
       console.log('Res is:', res)
       var pp = JSON.parse(res)
-      this.setNewState({ posts: pp.Posts, lblreq: " ricerca di ", req: search })
+      this.setNewState({ ispost: true, posts: pp.Posts, lblreq: " ricerca di ", req: search })
     })
   }
 
@@ -184,7 +198,7 @@ class Commander extends React.Component {
     $.post(url, res => {
       console.log('Res is:', res)
       var pp = JSON.parse(res)
-      this.setNewState({ posts: pp.Posts, lblreq: "data = ", req: this.formatDate(date) })
+      this.setNewState({ ispost: true, posts: pp.Posts, lblreq: "data = ", req: this.formatDate(date) })
     })
   }
 
@@ -215,7 +229,7 @@ class Commander extends React.Component {
       $.post(url, res => {
         //console.log('Res is:', res)
         var pp = JSON.parse(res)
-        this.setNewState({ posts: pp.Posts, lblreq: " data " + opstr + " ", req: this.formatDate(date) })
+        this.setNewState({ ispost: true, posts: pp.Posts, lblreq: " data " + opstr + " ", req: this.formatDate(date) })
       })
     }
   }
@@ -241,7 +255,7 @@ class Commander extends React.Component {
           </button>
         </div>
         <div className="ui" id="respost">
-          {this.state.posts && this.state.posts.length > 0 ?
+          {this.state.posts && (this.state.posts.length > 0) && this.state.ispost ?
             <div>
               {this.state.req ?
                 <div className="ui small header">
@@ -265,7 +279,7 @@ class Commander extends React.Component {
               </div>
             </div>
             : <div>
-              {this.state.req ?
+              {this.state.req && this.state.ispost ?
                 <div className="ui small header">
                   Nessun risultato per {this.state.lblreq} <i>{this.state.req}</i>. <br />Ricorda che i comandi vanno preceduti dai due punti. Per un elenco dei comandi disponibili usa :?
                 </div>
@@ -275,7 +289,38 @@ class Commander extends React.Component {
           <Help help={this.state.help}></Help>
           <Error err={this.state.error}></Error>
           <Info info={this.state.info} doreq={this.parseRequest}></Info>
+          <Users users={this.state}></Users>
         </div>
+      </div>
+    )
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////// USERS
+///////////////////////////////////////////////////////////////////////////////////
+class Users extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+  render() {
+    this.state = this.props.users;
+    console.log("Users state:", this.state)
+    return (
+      <div id="users">
+        {this.state.users && this.state.length > 0 ?
+          <div className="ui ordered list">
+            {this.state.users.map(function (user, i) {
+              <a class="item">{user.UserName} {user.NumMsg} messaggi.</a>
+            })}
+          </div>
+          : <div id="emptyres">
+            {this.state.req && this.state.isuser ?
+              <div className="ui small header">
+                Nessun risultato per il comando {this.state.lblreq} <i>{this.state.req}</i>.
+            </div>
+              : null}
+          </div>}
       </div>
     )
   }
@@ -292,13 +337,15 @@ class Error extends React.Component {
   }
   render() {
     return (
-      <div id="errMsg">
+      <div>
         {this.props.err ?
-          <div className="ui error message">
-            <div className="header">
-              Errore
-          </div>
-            <div>{this.props.err}</div>
+          <div id="errMsg">
+            <div className="ui error message">
+              <div className="header">
+                Errore
+              </div>
+              <div>{this.props.err}</div>
+            </div>
           </div>
           : null}
       </div>
@@ -318,27 +365,30 @@ class Help extends React.Component {
 
   render() {
     return (
-      <div id="helpid">
+      <div>
         {this.props.help ?
-          <div className="ui message">
-            <div className="header">Aiuto</div>
-            <div>
-              I comandi che si possono utilizzare sono sempre prefissati dai due punti:
+          <div id="helpid">
+            <div className="ui message">
+              <div className="header">Aiuto</div>
+              <div>
+                I comandi che si possono utilizzare sono sempre prefissati dai due punti:
               <ul>
-                <li><b>:aiuto</b><br />mostra questa schermata</li>
-                <li><b>:?</b><br />mostra questa schermata</li>
-                <li><b>:data</b> <i>segue una data in formato gg/mm/aaaa.</i> <br />
-                  Per esempio, per vedere i post del 27 gennaio 2003 si usa:<br />:data 27/01/2003<br />
-                  Va bene anche il formato a 6 caratteri senza separatore:<br />:data 270103
+                  <li><b>:aiuto</b><br />mostra questa schermata</li>
+                  <li><b>:?</b><br />mostra questa schermata</li>
+                  <li><b>:data</b> <i>segue una data in formato gg/mm/aaaa.</i> <br />
+                    Per esempio, per vedere i post del 27 gennaio 2003 si usa:<br />:data 27/01/2003<br />
+                    Va bene anche il formato a 6 caratteri senza separatore:<br />:data 270103
                 </li>
-                <li><b>:clr</b><br />cancella il risultato</li>
-                <li><b>:caso</b><br />
-                  <i>seguito dal nome di utente</i><br />Ritorna dei post casuali relativi as un utente <br />
-                  <i>senza nulla</i><br />Ritorna dei post casuali</li>
-                <li><i>Parola o frase che non sia un comando</i><br />Esegue una ricerca all'interno di tutti posts e ne presenta un risultato limitato.</li>
-              </ul>
-              Nei lista dei post è possibile selezionarne uno cliccando sulla data. Da questo punto si segue lo stream dei messaggi.
-          </div>
+                  <li><b>:clr</b><br />cancella il risultato</li>
+                  <li><b>:utenti</b><br />mostra l'elenco delgi utenti che hanno scritto messaggi</li>
+                  <li><b>:caso</b><br />
+                    <i>seguito dal nome di utente</i><br />Ritorna dei post casuali relativi as un utente <br />
+                    <i>senza nulla</i><br />Ritorna dei post casuali</li>
+                  <li><i>Parola o frase che non sia un comando</i><br />Esegue una ricerca all'interno di tutti posts e ne presenta un risultato limitato.</li>
+                </ul>
+                Nei lista dei post è possibile selezionarne uno cliccando sulla data. Da questo punto si segue lo stream dei messaggi.
+              </div>
+            </div>
           </div>
           : null}
       </div>
@@ -394,6 +444,7 @@ class Info extends React.Component {
     )
   }
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////// POST

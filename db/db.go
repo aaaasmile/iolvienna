@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"time"
 
+	"../web/idl"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -19,16 +20,6 @@ const (
 	pageSize = 10
 )
 
-type IolPostResp struct {
-	Posts []IolPost
-}
-
-type IolPost struct {
-	UserName string
-	Date     string
-	Content  string
-}
-
 func OpenDatabase() {
 	var err error
 	connDb, err = sql.Open("sqlite3", "db/iolvienna.db")
@@ -37,7 +28,7 @@ func OpenDatabase() {
 	}
 }
 
-func PostsOnDate(dateText string, more bool, less bool) (*IolPostResp, error) {
+func PostsOnDate(dateText string, more bool, less bool) (*idl.IolPostResp, error) {
 	qs := `SELECT rowid FROM iol_post WHERE date_published >= ? LIMIT(%d);`
 	if more {
 		qs = `SELECT rowid FROM iol_post WHERE date_published > ? LIMIT(%d);`
@@ -52,8 +43,8 @@ func PostsOnDate(dateText string, more bool, less bool) (*IolPostResp, error) {
 	}
 
 	defer rows.Close()
-	res := &IolPostResp{
-		Posts: []IolPost{},
+	res := &idl.IolPostResp{
+		Posts: []idl.IolPost{},
 	}
 	var rowid int
 	ids := []int{}
@@ -79,7 +70,30 @@ func PostsOnDate(dateText string, more bool, less bool) (*IolPostResp, error) {
 	return res, nil
 }
 
-func CasoPost() (*IolPostResp, error) {
+func GetUsers(page int) (*idl.IolUserResp, error) {
+	q := `SELECT count(id) as thecount, user_name from iol_post GROUP BY user_name ORDER BY thecount DESC LIMIT 20, ?;`
+	rows, err := connDb.Query(q, page*20)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+	res := &idl.IolUserResp{
+		Users: []idl.IolUser{},
+		Page:  page,
+	}
+	username := ""
+	count := 0
+	for rows.Next() {
+		if err := rows.Scan(&count, &username); err != nil {
+			return nil, err
+		}
+		res.Users = append(res.Users, idl.IolUser{UserName: username, NumMsg: count})
+	}
+	return res, nil
+}
+
+func CasoPost() (*idl.IolPostResp, error) {
 	q := `SELECT id from iol_post;`
 	rows, err := connDb.Query(q)
 	if err != nil {
@@ -87,8 +101,8 @@ func CasoPost() (*IolPostResp, error) {
 	}
 
 	defer rows.Close()
-	res := &IolPostResp{
-		Posts: []IolPost{},
+	res := &idl.IolPostResp{
+		Posts: []idl.IolPost{},
 	}
 	var rowid int
 	ids := []int{}
@@ -108,7 +122,7 @@ func CasoPost() (*IolPostResp, error) {
 	return res, nil
 }
 
-func CasoPostfromUser(user string) (*IolPostResp, error) {
+func CasoPostfromUser(user string) (*idl.IolPostResp, error) {
 	q := `SELECT id from iol_post where user_name = ?;`
 	rows, err := connDb.Query(q, user)
 	if err != nil {
@@ -116,8 +130,8 @@ func CasoPostfromUser(user string) (*IolPostResp, error) {
 	}
 
 	defer rows.Close()
-	res := &IolPostResp{
-		Posts: []IolPost{},
+	res := &idl.IolPostResp{
+		Posts: []idl.IolPost{},
 	}
 	var rowid int
 	ids := []int{}
@@ -138,7 +152,7 @@ func CasoPostfromUser(user string) (*IolPostResp, error) {
 	return res, nil
 }
 
-func MatchText(textMatch string) (*IolPostResp, error) {
+func MatchText(textMatch string) (*idl.IolPostResp, error) {
 	q := `SELECT playsrowid from playsearch WHERE text MATCH ?;`
 
 	rows, err := connDb.Query(q, textMatch)
@@ -147,8 +161,8 @@ func MatchText(textMatch string) (*IolPostResp, error) {
 	}
 
 	defer rows.Close()
-	res := &IolPostResp{
-		Posts: []IolPost{},
+	res := &idl.IolPostResp{
+		Posts: []idl.IolPost{},
 	}
 	var rowid int
 	ids := []int{}
@@ -169,7 +183,7 @@ func MatchText(textMatch string) (*IolPostResp, error) {
 	return res, nil
 }
 
-func prepareSlice(ids []int, res *IolPostResp) {
+func prepareSlice(ids []int, res *idl.IolPostResp) {
 	maxItems := math.Min(float64(len(ids)), pageSize)
 	for i := 0; i < int(maxItems); i++ {
 		selected := ids[i]
@@ -182,7 +196,7 @@ func prepareSlice(ids []int, res *IolPostResp) {
 			log.Println("No rows were returned!")
 		case nil:
 			//fmt.Println(userName, datePublished, postContent)
-			post := IolPost{
+			post := idl.IolPost{
 				UserName: userName,
 				Date:     datePublished,
 				Content:  postContent,
