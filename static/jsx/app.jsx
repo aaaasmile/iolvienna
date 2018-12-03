@@ -386,6 +386,7 @@ class Help extends React.Component {
                 </li>
                   <li><b>:clr</b><br />cancella il risultato</li>
                   <li><b>:utenti</b><br />mostra l'elenco delgi utenti che hanno scritto messaggi</li>
+                  <li><b>:u</b><br />mostra l'elenco delgi utenti che hanno scritto messaggi</li>
                   <li><b>:caso</b><br />
                     <i>seguito dal nome di utente</i><br />Ritorna dei post casuali relativi as un utente <br />
                     <i>senza nulla</i><br />Ritorna dei post casuali</li>
