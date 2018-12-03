@@ -71,8 +71,9 @@ func PostsOnDate(dateText string, more bool, less bool) (*idl.IolPostResp, error
 }
 
 func GetUsers(page int) (*idl.IolUserResp, error) {
-	q := `SELECT count(id) as thecount, user_name from iol_post GROUP BY user_name ORDER BY thecount DESC LIMIT 20, ?;`
-	rows, err := connDb.Query(q, page*20)
+	q := `SELECT count(id) as thecount, user_name from iol_post GROUP BY user_name ORDER BY thecount DESC LIMIT 50;`
+	//fmt.Printf("Query:", q)
+	rows, err := connDb.Query(q)
 	if err != nil {
 		return nil, err
 	}
@@ -88,6 +89,7 @@ func GetUsers(page int) (*idl.IolUserResp, error) {
 		if err := rows.Scan(&count, &username); err != nil {
 			return nil, err
 		}
+		//log.Printf("Append user %s with count %d", username, count)
 		res.Users = append(res.Users, idl.IolUser{UserName: username, NumMsg: count})
 	}
 	return res, nil

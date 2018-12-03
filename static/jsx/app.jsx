@@ -75,6 +75,7 @@ class Commander extends React.Component {
       case "clr":
         this.clearResult()
         break
+      case "u":
       case "utenti":
         this.usersReq()
         break;
@@ -308,10 +309,10 @@ class Users extends React.Component {
     console.log("Users state:", this.state)
     return (
       <div id="users">
-        {this.state.users && this.state.length > 0 ?
+        {this.state.users && this.state.users.length > 0 ?
           <div className="ui ordered list">
             {this.state.users.map(function (user, i) {
-              <a class="item">{user.UserName} {user.NumMsg} messaggi.</a>
+              return <a key={i} className="item">{user.UserName} {user.NumMsg} messaggi</a>
             })}
           </div>
           : <div id="emptyres">
