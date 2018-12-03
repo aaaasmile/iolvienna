@@ -36,6 +36,7 @@ class Commander extends React.Component {
     };
     this.requestPostsOnDate = this.requestPostsOnDate.bind(this)
     this.parseRequest = this.parseRequest.bind(this)
+    this.randomPostReq = this.randomPostReq.bind(this)
   }
 
   showInfo() {
@@ -290,7 +291,7 @@ class Commander extends React.Component {
           <Help help={this.state.help}></Help>
           <Error err={this.state.error}></Error>
           <Info info={this.state.info} doreq={this.parseRequest}></Info>
-          <Users users={this.state}></Users>
+          <Users users={this.state} rndOnUser={this.randomPostReq}></Users>
         </div>
       </div>
     )
@@ -305,17 +306,20 @@ class Users extends React.Component {
     super(props);
   }
   render() {
+    var that = this
     this.state = this.props.users;
-    console.log("Users state:", this.state)
+    //console.log("Users state:", this.state)
     return (
       <div id="users">
         {this.state.users && this.state.users.length > 0 ?
           <div className="ui ordered list">
             {this.state.users.map(function (user, i) {
-              return <a key={i} className="item">{user.UserName} {user.NumMsg} messaggi</a>
+              return <a key={i} className="item" onClick={() => {
+                that.props.rndOnUser(user.UserName)
+              }}>{user.UserName} {user.NumMsg} messaggi</a>
             })}
           </div>
-          : <div id="emptyres">
+          : <div>
             {this.state.req && this.state.isuser ?
               <div className="ui small header">
                 Nessun risultato per il comando {this.state.lblreq} <i>{this.state.req}</i>.
