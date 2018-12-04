@@ -40,6 +40,14 @@ class Commander extends React.Component {
     this.requestPostsOnDate = this.requestPostsOnDate.bind(this);
     this.parseRequest = this.parseRequest.bind(this);
     this.randomPostReq = this.randomPostReq.bind(this);
+    this.restoreOnHistory();
+  }
+
+  restoreOnHistory() {
+    window.addEventListener('popstate', e => {
+      console.log('browser go back');
+      this.setNewState(e.state);
+    });
   }
 
   showInfo() {
@@ -47,6 +55,7 @@ class Commander extends React.Component {
     this.setNewState({
       info: true
     });
+    history.pushState(this.state, `info`, `./#info`);
   }
 
   parseRequest(req) {
@@ -99,6 +108,7 @@ class Commander extends React.Component {
           this.setNewState({
             error: err
           });
+          history.pushState(this.state, `err`, `./#err`);
         });
 
         if (ddreq) {
@@ -175,6 +185,7 @@ class Commander extends React.Component {
     this.setNewState({
       help: true
     });
+    history.pushState(this.state, `help`, `./#help`);
   }
 
   clearResult() {
@@ -215,6 +226,7 @@ class Commander extends React.Component {
         lblreq: "comando ",
         req: ":caso " + arg
       });
+      history.pushState(this.state, `${url}`, `./#${url}`);
     });
   }
 
@@ -233,6 +245,7 @@ class Commander extends React.Component {
         lblreq: "comando ",
         req: ":utenti"
       });
+      history.pushState(this.state, `${url}`, `./#${url}`);
     });
   }
 
@@ -256,6 +269,7 @@ class Commander extends React.Component {
         lblreq: " ricerca di ",
         req: search
       });
+      history.pushState(this.state, `${url}`, `./#${url}`);
     });
   }
 
@@ -274,6 +288,7 @@ class Commander extends React.Component {
         lblreq: "data = ",
         req: this.formatDate(date)
       });
+      history.pushState(this.state, `${url}`, `./#${url}`);
     });
   }
 
@@ -316,6 +331,7 @@ class Commander extends React.Component {
           lblreq: " data " + opstr + " ",
           req: this.formatDate(date)
         });
+        history.pushState(this.state, `${url}`, `./#${url}`);
       });
     }
   }

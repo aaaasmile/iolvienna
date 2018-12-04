@@ -37,11 +37,20 @@ class Commander extends React.Component {
     this.requestPostsOnDate = this.requestPostsOnDate.bind(this)
     this.parseRequest = this.parseRequest.bind(this)
     this.randomPostReq = this.randomPostReq.bind(this)
+    this.restoreOnHistory()
+  }
+
+  restoreOnHistory(){
+    window.addEventListener('popstate', e => {
+      console.log('browser go back')
+      this.setNewState(e.state)  
+    })
   }
 
   showInfo() {
     console.log("Show info in commander")
     this.setNewState({ info: true })
+    history.pushState(this.state, `info`, `./#info`)
   }
 
   parseRequest(req) {
@@ -62,7 +71,7 @@ class Commander extends React.Component {
         arg = ""
       }
     }
-
+    
     switch (cmd) {
       case "?":
       case "aiuto":
@@ -85,6 +94,7 @@ class Commander extends React.Component {
         let ddreq = this.makeDateForReq(arg, err => {
           console.log('Parse error:', err)
           this.setNewState({ error: err })
+          history.pushState(this.state, `err`, `./#err`)
         })
         if (ddreq) {
           this.requestPostsOnDate(ddreq)
@@ -145,6 +155,7 @@ class Commander extends React.Component {
 
   showHelp() {
     this.setNewState({ help: true })
+    history.pushState(this.state, `help`, `./#help`)
   }
 
   clearResult() {
@@ -164,6 +175,7 @@ class Commander extends React.Component {
       console.log('Res is:', res)
       var pp = JSON.parse(res)
       this.setNewState({ ispost: true, posts: pp.Posts, lblreq: "comando ", req: (":caso " + arg) })
+      history.pushState(this.state, `${url}`, `./#${url}`)
     })
   }
 
@@ -175,6 +187,7 @@ class Commander extends React.Component {
       console.log('Res is:', res)
       var pp = JSON.parse(res)
       this.setNewState({ isuser: true, users: pp.Users, lblreq: "comando ", req: (":utenti") })
+      history.pushState(this.state, `${url}`, `./#${url}`)
     })
   }
 
@@ -190,6 +203,7 @@ class Commander extends React.Component {
       console.log('Res is:', res)
       var pp = JSON.parse(res)
       this.setNewState({ ispost: true, posts: pp.Posts, lblreq: " ricerca di ", req: search })
+      history.pushState(this.state, `${url}`, `./#${url}`)
     })
   }
 
@@ -201,6 +215,7 @@ class Commander extends React.Component {
       console.log('Res is:', res)
       var pp = JSON.parse(res)
       this.setNewState({ ispost: true, posts: pp.Posts, lblreq: "data = ", req: this.formatDate(date) })
+      history.pushState(this.state, `${url}`, `./#${url}`)
     })
   }
 
@@ -232,6 +247,7 @@ class Commander extends React.Component {
         //console.log('Res is:', res)
         var pp = JSON.parse(res)
         this.setNewState({ ispost: true, posts: pp.Posts, lblreq: " data " + opstr + " ", req: this.formatDate(date) })
+        history.pushState(this.state, `${url}`, `./#${url}`)
       })
     }
   }
@@ -510,3 +526,5 @@ class Post extends React.Component {
 }
 
 ReactDOM.render(<App />, document.getElementById('app'));
+
+

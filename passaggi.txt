@@ -85,9 +85,10 @@ Si può usare markdown-it.min.js che ho messo sotto static/js, però in jsx non 
 nel componente come prop. Si può, ma viene considerato un problema di corss scripting attack anche se funziona(vedi tmp/repo/markdown). 
 
 == TODO
-- history nel browser delle pagine chiamate, se è possibile.
+- history nel browser delle pagine chiamate, se è possibile. [DONE]
 - invece dei bottoni avanti e indietro, usare lo scroll
-- comando :utenti per avere la lista di tutti gli utenti con i loro messaggi
+- comando :utenti per avere la lista di tutti gli utenti con i loro messaggi [DONE]
+- format dei post: manca il break e i link resolve.
 
 
 
