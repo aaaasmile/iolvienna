@@ -40,17 +40,20 @@ class Commander extends React.Component {
     this.restoreOnHistory()
   }
 
-  restoreOnHistory(){
+  restoreOnHistory() {
     window.addEventListener('popstate', e => {
       console.log('browser go back')
-      this.setNewState(e.state)  
+      this.setNewState(e.state)
     })
   }
 
   showInfo() {
     console.log("Show info in commander")
-    this.setNewState({ info: true })
-    history.pushState(this.state, `info`, `./#info`)
+    this.setNewStateHist({ info: true }, `info`, `./#info`)
+  }
+
+  showHelp() {
+    this.setNewStateHist({ help: true }, `help`, `./#help`)
   }
 
   parseRequest(req) {
@@ -71,7 +74,7 @@ class Commander extends React.Component {
         arg = ""
       }
     }
-    
+
     switch (cmd) {
       case "?":
       case "aiuto":
@@ -110,6 +113,11 @@ class Commander extends React.Component {
   setNewState(obj) {
     this.clearResult()
     this.setState(obj)
+  }
+
+  setNewStateHist(obj, title, url) {
+    this.clearResult()
+    this.setState(obj, () => history.pushState(this.state, title, url))
   }
 
   makeDateForReq(datestr, errFn) {
@@ -151,11 +159,6 @@ class Commander extends React.Component {
     }
     let strdate = `${yy}-${mm}-${gg}T00:00:00.000Z`
     return strdate
-  }
-
-  showHelp() {
-    this.setNewState({ help: true })
-    history.pushState(this.state, `help`, `./#help`)
   }
 
   clearResult() {

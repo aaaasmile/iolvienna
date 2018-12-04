@@ -52,10 +52,15 @@ class Commander extends React.Component {
 
   showInfo() {
     console.log("Show info in commander");
-    this.setNewState({
+    this.setNewStateHist({
       info: true
-    });
-    history.pushState(this.state, `info`, `./#info`);
+    }, `info`, `./#info`);
+  }
+
+  showHelp() {
+    this.setNewStateHist({
+      help: true
+    }, `help`, `./#help`);
   }
 
   parseRequest(req) {
@@ -129,6 +134,11 @@ class Commander extends React.Component {
     this.setState(obj);
   }
 
+  setNewStateHist(obj, title, url) {
+    this.clearResult();
+    this.setState(obj, () => history.pushState(this.state, title, url));
+  }
+
   makeDateForReq(datestr, errFn) {
     let arr = datestr.split('/');
 
@@ -179,13 +189,6 @@ class Commander extends React.Component {
 
     let strdate = `${yy}-${mm}-${gg}T00:00:00.000Z`;
     return strdate;
-  }
-
-  showHelp() {
-    this.setNewState({
-      help: true
-    });
-    history.pushState(this.state, `help`, `./#help`);
   }
 
   clearResult() {

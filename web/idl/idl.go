@@ -2,7 +2,7 @@ package idl
 
 var (
 	Appname = "iol-service"
-	Buildnr = "0.3.041218"
+	Buildnr = "0.4.041218"
 )
 
 type IolPost struct {
