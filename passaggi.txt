@@ -83,6 +83,12 @@ Nella mia soluzione non posso usare library come markdown-react-js perché non r
 in quanto non ho nessun builder incorporato come webpack.
 Si può usare markdown-it.min.js che ho messo sotto static/js, però in jsx non si mette il codice html generato
 nel componente come prop. Si può, ma viene considerato un problema di corss scripting attack anche se funziona(vedi tmp/repo/markdown). 
+(Markdown non mi serve, il testo lo edito direttamente in html che si fa prima)
+
+== Lexer
+Mi serve un tokenizer per cambiare il formato dei post. Essenzialmente ci sono i \r\n che vanno cambiati con <br \>.
+Poi ci sono i link che sonoin formato [dis:linkhttp] che va trasformato in <a href="..">..</a>
+Si potrebbe provare con moo (https://github.com/no-context/moo) oppure scrivere un lexer di nuovo come ho fatto in go.
 
 == TODO
 - history nel browser delle pagine chiamate, se è possibile. [DONE]
