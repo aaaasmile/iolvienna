@@ -187,7 +187,7 @@ class Commander extends React.Component {
     var url = 'do?' + ser
     console.log('POST to ', url)
     $.post(url, res => {
-      console.log('Res is:', res)
+      //console.log('Res is:', res)
       var pp = JSON.parse(res)
       this.setNewState({ isuser: true, users: pp.Users, lblreq: "comando ", req: (":utenti") })
       history.pushState(this.state, `${url}`, `./#${url}`)
@@ -203,7 +203,7 @@ class Commander extends React.Component {
     var url = 'do?' + ser
     console.log('POST to ', url)
     $.post(url, res => {
-      console.log('Res is:', res)
+      //console.log('Res is:', res)
       var pp = JSON.parse(res)
       this.setNewState({ ispost: true, posts: pp.Posts, lblreq: " ricerca di ", req: search })
       history.pushState(this.state, `${url}`, `./#${url}`)
@@ -215,7 +215,7 @@ class Commander extends React.Component {
     var url = 'do?' + ser
     console.log('POST to ', url)
     $.post(url, res => {
-      console.log('Res is:', res)
+      //console.log('Res is:', res)
       var pp = JSON.parse(res)
       this.setNewState({ ispost: true, posts: pp.Posts, lblreq: "data = ", req: this.formatDate(date) })
       history.pushState(this.state, `${url}`, `./#${url}`)
@@ -520,7 +520,7 @@ class Post extends React.Component {
             </div>
           </div>
           <div className="text">
-            {this.props.post.Content}
+            {lex.procPost(this.props.post.Content)}
           </div>
         </div>
       </div>
@@ -530,4 +530,74 @@ class Post extends React.Component {
 
 ReactDOM.render(<App />, document.getElementById('app'));
 
+////////////////////////////////////// Lex for POst processing
+var lex = {};
+(function(){
+  const _itemText = 0;
+  const _itemLfCr = 1;
 
+  lex.procPost = function(post){
+    let l = lex.lexCtor("Text lex", post)
+	  let rr = ""
+    while(1) {
+      let item = l.nextItem()
+      if (!item){
+        break
+      }
+      console.log("type %s, val %s", item.typ, item.val)
+      if (item.typ == _itemLfCr) {
+        rr += "<br />"
+      }else if(item.typ === _itemText){
+        rr += item.val
+      }
+      if (l.state === null) {
+        break
+      }
+    }
+	  return rr
+  }
+
+  lex.lexCtor = function(name,input){
+    var _lexer = { 
+      name:  name,
+      input: input,
+      state: null,
+      items: [],
+      start: 0,
+	    pos: 0,
+    };
+
+    _lexer.nextItem = function(){
+      if(_lexer.items.length === 0){
+        var _item = {
+          typ : _itemText,
+          val: _lexer.input
+        }
+        _lexer.state = null
+        return _item;
+      }else{
+        return _lexer.items.pop();
+      }
+    }
+
+    _lexer.emit = function(item){
+      _lexer.items.push(item)
+    }
+
+    _lexer.lexText = function() {
+      while(1) {
+        if (_lexer.next() === null) {
+          break
+        }
+      }
+      if (_lexer.pos > _lexer.start) {
+        _lexer.emit(itemText)
+      }
+      return null
+    }
+
+    _lexer.state = _lexer.lexText
+
+    return _lexer
+  }
+})();

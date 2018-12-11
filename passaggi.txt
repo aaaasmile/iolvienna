@@ -89,6 +89,11 @@ nel componente come prop. Si può, ma viene considerato un problema di corss scr
 - invece dei bottoni avanti e indietro, usare lo scroll
 - comando :utenti per avere la lista di tutti gli utenti con i loro messaggi [DONE]
 - format dei post: manca il break e i link resolve.
+- Lexer da finire
+- comand id
+
+== Problemi
+la funzione caso con "Simo '76" non funziona (click sul nome)
 
 
 

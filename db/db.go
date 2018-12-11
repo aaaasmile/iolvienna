@@ -189,11 +189,11 @@ func prepareSlice(ids []int, res *idl.IolPostResp) {
 	maxItems := math.Min(float64(len(ids)), pageSize)
 	for i := 0; i < int(maxItems); i++ {
 		selected := ids[i]
-		qs := `SELECT user_name, date_published, post_content FROM iol_post WHERE rowid = ?;`
+		qs := `SELECT user_name, date_published, post_content, post_id FROM iol_post WHERE rowid = ?;`
 		//fmt.Println(qs, selected)
 		row := connDb.QueryRow(qs, selected)
-		var userName, datePublished, postContent string
-		switch err := row.Scan(&userName, &datePublished, &postContent); err {
+		var userName, datePublished, postContent, postid string
+		switch err := row.Scan(&userName, &datePublished, &postContent, &postid); err {
 		case sql.ErrNoRows:
 			log.Println("No rows were returned!")
 		case nil:
@@ -202,6 +202,7 @@ func prepareSlice(ids []int, res *idl.IolPostResp) {
 				UserName: userName,
 				Date:     datePublished,
 				Content:  postContent,
+				PostID:   postid,
 			}
 			res.Posts = append(res.Posts, post)
 		}

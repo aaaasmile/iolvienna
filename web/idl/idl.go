@@ -9,6 +9,7 @@ type IolPost struct {
 	UserName string
 	Date     string
 	Content  string
+	PostID   string
 }
 
 type IolPostResp struct {
