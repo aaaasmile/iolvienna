@@ -99,6 +99,14 @@ func handlePost(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	if val, ok := q["postid"]; ok {
+		log.Println("DO postid", val)
+		doDbRequestWithPosts(w, req, func() (*idl.IolPostResp, error) {
+			return db.GetPostOnID(val[0])
+		})
+		return
+	}
+
 	log.Println("Command invalid", req.RequestURI)
 	w.WriteHeader(http.StatusBadRequest)
 	w.Write([]byte("400 - Bad Request"))

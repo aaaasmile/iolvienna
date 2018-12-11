@@ -6,10 +6,11 @@ var (
 )
 
 type IolPost struct {
-	UserName string
-	Date     string
-	Content  string
-	PostID   string
+	UserName     string
+	Date         string
+	Content      string
+	PostID       string
+	PostParentID string
 }
 
 type IolPostResp struct {

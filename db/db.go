@@ -124,6 +124,36 @@ func CasoPost() (*idl.IolPostResp, error) {
 	return res, nil
 }
 
+func GetPostOnID(postid string) (*idl.IolPostResp, error) {
+	q := `SELECT id from iol_post where post_id = ?;`
+	rows, err := connDb.Query(q, postid)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+	res := &idl.IolPostResp{
+		Posts: []idl.IolPost{},
+	}
+	var rowid int
+	ids := []int{}
+	for rows.Next() {
+		if err := rows.Scan(&rowid); err != nil {
+			return nil, err
+		}
+		ids = append(ids, rowid)
+	}
+	if len(ids) > 0 {
+		//log.Printf("Found ids: %v (len %d)", ids, len(ids))
+		shuffle(ids)
+		//log.Printf("After shuffle ids: %v (len %d)", ids, len(ids))
+		prepareSlice(ids, res)
+		log.Printf("Prepared %d posts\n", len(res.Posts))
+	}
+
+	return res, nil
+}
+
 func CasoPostfromUser(user string) (*idl.IolPostResp, error) {
 	q := `SELECT id from iol_post where user_name = ?;`
 	rows, err := connDb.Query(q, user)
@@ -189,22 +219,26 @@ func prepareSlice(ids []int, res *idl.IolPostResp) {
 	maxItems := math.Min(float64(len(ids)), pageSize)
 	for i := 0; i < int(maxItems); i++ {
 		selected := ids[i]
-		qs := `SELECT user_name, date_published, post_content, post_id FROM iol_post WHERE rowid = ?;`
+		qs := `SELECT user_name, date_published, post_content, post_id, post_parent_id FROM iol_post WHERE rowid = ?;`
 		//fmt.Println(qs, selected)
 		row := connDb.QueryRow(qs, selected)
 		var userName, datePublished, postContent, postid string
-		switch err := row.Scan(&userName, &datePublished, &postContent, &postid); err {
+		var postParentid sql.NullString
+		switch err := row.Scan(&userName, &datePublished, &postContent, &postid, &postParentid); err {
 		case sql.ErrNoRows:
 			log.Println("No rows were returned!")
 		case nil:
 			//fmt.Println(userName, datePublished, postContent)
 			post := idl.IolPost{
-				UserName: userName,
-				Date:     datePublished,
-				Content:  postContent,
-				PostID:   postid,
+				UserName:     userName,
+				Date:         datePublished,
+				Content:      postContent,
+				PostID:       postid,
+				PostParentID: postParentid.String,
 			}
 			res.Posts = append(res.Posts, post)
+		default:
+			log.Println("Error on row scan:", err)
 		}
 	}
 }

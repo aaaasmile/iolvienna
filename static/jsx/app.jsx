@@ -92,12 +92,15 @@ class Commander extends React.Component {
       case "utenti":
         this.usersReq()
         break;
+      case "id":
+        console.log("Request id on:", arg)
+        this.reqId(arg)
+        break;
       case "data":
         console.log('Date post request')
         let ddreq = this.makeDateForReq(arg, err => {
           console.log('Parse error:', err)
-          this.setNewState({ error: err })
-          history.pushState(this.state, `err`, `./#err`)
+          this.setNewState({ error: err }) // no history on error
         })
         if (ddreq) {
           this.requestPostsOnDate(ddreq)
@@ -162,7 +165,10 @@ class Commander extends React.Component {
   }
 
   clearResult() {
-    this.setState({ help: false, posts: [], ispost: false, users: [], isuser: false, error: "", req: "", lblreq: "", info: false })
+    this.setState({
+      help: false, posts: [], ispost: false, users: [],
+      isuser: false, error: "", req: "", lblreq: "", info: false
+    })
   }
 
   randomPostReq(arg) {
@@ -179,6 +185,18 @@ class Commander extends React.Component {
       var pp = JSON.parse(res)
       this.setNewState({ ispost: true, posts: pp.Posts, lblreq: "comando ", req: (":caso " + arg) })
       history.pushState(this.state, `${url}`, `./#${url}`)
+    })
+  }
+
+  reqId(arg) {
+    var ser
+    ser = $.param({ "postid": arg })
+    var url = 'do?' + ser
+    console.log('POST to ', url)
+    $.post(url, res => {
+      console.log('Res is:', res)
+      var pp = JSON.parse(res)
+      this.setNewStateHist({ ispost: true, posts: pp.Posts, lblreq: "comando ", req: (":id " + arg) }, `${url}`, `./#${url}`)
     })
   }
 
@@ -406,198 +424,199 @@ class Help extends React.Component {
                   <li><b>:clr</b><br />cancella il risultato</li>
                   <li><b>:utenti</b><br />mostra l'elenco delgi utenti che hanno scritto messaggi</li>
                   <li><b>:u</b><br />mostra l'elenco delgi utenti che hanno scritto messaggi</li>
-                  <li><b>:caso</b><br />
-                    <i>seguito dal nome di utente</i><br />Ritorna dei post casuali relativi as un utente <br />
-                    <i>senza nulla</i><br />Ritorna dei post casuali</li>
-                  <li><i>Parola o frase che non sia un comando</i><br />Esegue una ricerca all'interno di tutti posts e ne presenta un risultato limitato.</li>
+                  <li><b>:id</b> <i>segue un id di un post</i> <br /></li>
+                    <li><b>:caso</b><br />
+                      <i>seguito dal nome di utente</i><br />Ritorna dei post casuali relativi as un utente <br />
+                      <i>senza nulla</i><br />Ritorna dei post casuali</li>
+                    <li><i>Parola o frase che non sia un comando</i><br />Esegue una ricerca all'interno di tutti posts e ne presenta un risultato limitato.</li>
                 </ul>
-                Nei lista dei post è possibile selezionarne uno cliccando sulla data. Da questo punto si segue lo stream dei messaggi.
+                  Nei lista dei post è possibile selezionarne uno cliccando sulla data. Da questo punto si segue lo stream dei messaggi.
+              </div>
               </div>
             </div>
-          </div>
-          : null}
+            : null}
       </div>
     )
-  }
-}
-
-///////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////// INFO
-///////////////////////////////////////////////////////////////////////////////////
-
+        }
+      }
+      
+      ///////////////////////////////////////////////////////////////////////////////////
+      /////////////////////////////////////////////////////////////////////////// INFO
+      ///////////////////////////////////////////////////////////////////////////////////
+      
 class Info extends React.Component {
-  constructor(props) {
-    super(props);
+          constructor(props) {
+        super(props);
     this.state = {};
-  }
-
+      }
+    
   render() {
     return (
       <div>
-        {this.props.info ?
-          <div>
-            <h2 className="ui dividing header">Info su...</h2>
-            <a onClick={() => { this.props.doreq(":data 080403") }}>
-              <div className="ui raised segment">
-                <p><i>Benvenuti Italians Viennesi!Ma che alla pizza eravate cosi pochi? Pochi fan di Beppe o pochi Italians a Vienna?</i></p>
-              </div>
-            </a> <br />
-            <p>È stato questo il primo post nella sezione di Vienna di IOL. Parliamo dell'8 aprile 2003. Undici anni dopo: </p>
-            <a onClick={() => { this.props.doreq(":data 061014") }}>
-              <div className="ui raised segment">
-                <p><i>beh, allora lo testo subito!! </i></p>
-              </div>
-            </a><br />
-            <p>Si tratta dell'ultimo messaggio salvato dopo la scomparsa della sezione di Vienna di IOL. Il messaggio fu scritto il 6 ottobre 2014.</p>
-            <p>In mezzo a questi due post, la bellezza di 20 803 messaggi che hanno rischiato di finire nell'oblio.
+          {this.props.info ?
+            <div>
+              <h2 className="ui dividing header">Info su...</h2>
+              <a onClick={() => { this.props.doreq(":data 080403") }}>
+                <div className="ui raised segment">
+                  <p><i>Benvenuti Italians Viennesi!Ma che alla pizza eravate cosi pochi? Pochi fan di Beppe o pochi Italians a Vienna?</i></p>
+                </div>
+              </a> <br />
+              <p>È stato questo il primo post nella sezione di Vienna di IOL. Parliamo dell'8 aprile 2003. Undici anni dopo: </p>
+              <a onClick={() => { this.props.doreq(":data 061014") }}>
+                <div className="ui raised segment">
+                  <p><i>beh, allora lo testo subito!! </i></p>
+                </div>
+              </a><br />
+              <p>Si tratta dell'ultimo messaggio salvato dopo la scomparsa della sezione di Vienna di IOL. Il messaggio fu scritto il 6 ottobre 2014.</p>
+              <p>In mezzo a questi due post, la bellezza di 20 803 messaggi che hanno rischiato di finire nell'oblio.
                Ma con questo progetto <b>IOL Vienna Vintage</b> ho voluto recuperare tutti messaggi del forum IOL sezione di Vienna rendendoli accessibili a chiunque.</p>
-            <p>All'interno si trovano molte informazioni che riguardano Vienna. Ma è anche uno spaccato di come, in quel periodo, alcuni italiani che si sono trasferiti a Vienna
+              <p>All'interno si trovano molte informazioni che riguardano Vienna. Ma è anche uno spaccato di come, in quel periodo, alcuni italiani che si sono trasferiti a Vienna
               comunicavano e scambiavano opinioni sui più vari argomenti. Il forum era anche un punto di ritrovo per organizzare eventi reali in città.</p>
-            <p>Nel frattempo i modi di comunicare sono decisamente cambiati e la sezione di Vienna di IOL, come altri forum, ha seguito un lento e inesorabile declino
+              <p>Nel frattempo i modi di comunicare sono decisamente cambiati e la sezione di Vienna di IOL, come altri forum, ha seguito un lento e inesorabile declino
               fino alla definitiva chiusura in un momento buio e imprecisato di qualche anno fa.</p>
-            <p>Ora <b>IOL Vienna Vintage</b> offre la possibilità di navigare in tutta quella miriade di messaggi, senza però la possibilità di aggiungerne di nuovi.</p>
-            <p>Se questa necessità ci fosse o ci fosse stata, il forum non sarebbe di certo morto.</p>
-            <p>Per inizare questo viaggio nel passato basta inserire un comando oppure una parola da cercare.</p>
-            <p>Per esempio con la parola <a onClick={() => { this.props.doreq("chi cerca trova") }}>chi cerca trova</a>.
+              <p>Ora <b>IOL Vienna Vintage</b> offre la possibilità di navigare in tutta quella miriade di messaggi, senza però la possibilità di aggiungerne di nuovi.</p>
+              <p>Se questa necessità ci fosse o ci fosse stata, il forum non sarebbe di certo morto.</p>
+              <p>Per inizare questo viaggio nel passato basta inserire un comando oppure una parola da cercare.</p>
+              <p>Per esempio con la parola <a onClick={() => { this.props.doreq("chi cerca trova") }}>chi cerca trova</a>.
                 I comandi a disposizione si hanno con <a onClick={() => { this.props.doreq(":?") }}>:?</a></p>
-            <p>Buon divertimento! Vostro <a onClick={() => {
-              this.props.doreq(":caso aaaasmile")
-            }}>[aaaasmile]</a></p>
-          </div>
-          : null}
-      </div>
-    )
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////// POST
-///////////////////////////////////////////////////////////////////////////////////
-
+              <p>Buon divertimento! Vostro <a onClick={() => {
+                this.props.doreq(":caso aaaasmile")
+              }}>[aaaasmile]</a></p>
+            </div>
+            : null}
+        </div>
+        )
+      }
+    }
+    
+    
+    ///////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////// POST
+    ///////////////////////////////////////////////////////////////////////////////////
+    
 class Post extends React.Component {
-  constructor(props) {
-    super(props);
+          constructor(props) {
+        super(props);
     this.state = {};
-  }
-
+      }
+    
   formatDate(dateStr) {
-    let date = new Date(dateStr)
-    let gg = "" + date.getDate()
+          let date = new Date(dateStr)
+        let gg = "" + date.getDate()
     if (gg.length < 2) {
-      gg = "0" + gg
-    }
-    let mm = "" + (date.getMonth() + 1)
+          gg = "0" + gg
+        }
+        let mm = "" + (date.getMonth() + 1)
     if (mm.length < 2) {
-      mm = "0" + mm
-    }
-    let min = date.getMinutes()
+          mm = "0" + mm
+        }
+        let min = date.getMinutes()
     if (min < 10) {
-      min = "0" + min
-    }
-    let hh = date.getHours()
+          min = "0" + min
+        }
+        let hh = date.getHours()
     if (hh < 10) {
-      hh = "0" + hh
-    }
-    return gg + '/' + mm + '/' + date.getFullYear() + " " + hh + ":" + min
-  }
-
+          hh = "0" + hh
+        }
+        return gg + '/' + mm + '/' + date.getFullYear() + " " + hh + ":" + min
+      }
+    
   render() {
     return (
       <div className="ui postId">
-        <div className="content">
-          <div className="ui two column grid">
-            <div className="column">
-              <div className="author"><a onClick={() => { this.props.doreq(":caso " + this.props.post.UserName) }}>{this.props.post.UserName}</a></div>
-            </div>
-            <div className="column">
-              <div className="metadata">
-                <a className="date" onClick={() => {
-                  this.props.morePostsOnDate(this.props.post.Date)
-                }
-                }>{this.formatDate(this.props.post.Date)}</a>
+          <div className="content">
+            <div className="ui two column grid">
+              <div className="column">
+                <div className="author"><a onClick={() => { this.props.doreq(":caso " + this.props.post.UserName) }}>{this.props.post.UserName}</a></div>
+              </div>
+              <div className="column">
+                <div className="metadata">
+                  <a className="date" onClick={() => {
+                    this.props.morePostsOnDate(this.props.post.Date)
+                  }
+                  }>{this.formatDate(this.props.post.Date)}</a>
+                </div>
               </div>
             </div>
-          </div>
-          <div className="text">
-            {lex.procPost(this.props.post.Content)}
+            <div className="text">
+              {lex.procPost(this.props.post.Content)}
+            </div>
           </div>
         </div>
-      </div>
-    )
-  }
-}
-
-ReactDOM.render(<App />, document.getElementById('app'));
-
-////////////////////////////////////// Lex for POst processing
-var lex = {};
-(function(){
-  const _itemText = 0;
-  const _itemLfCr = 1;
-
-  lex.procPost = function(post){
-    let l = lex.lexCtor("Text lex", post)
-	  let rr = ""
-    while(1) {
-      let item = l.nextItem()
-      if (!item){
-        break
-      }
-      console.log("type %s, val %s", item.typ, item.val)
-      if (item.typ == _itemLfCr) {
-        rr += "<br />"
-      }else if(item.typ === _itemText){
-        rr += item.val
-      }
-      if (l.state === null) {
-        break
+        )
       }
     }
-	  return rr
-  }
-
-  lex.lexCtor = function(name,input){
-    var _lexer = { 
-      name:  name,
-      input: input,
-      state: null,
-      items: [],
-      start: 0,
-	    pos: 0,
-    };
-
-    _lexer.nextItem = function(){
-      if(_lexer.items.length === 0){
-        var _item = {
-          typ : _itemText,
-          val: _lexer.input
+    
+ReactDOM.render(<App />, document.getElementById('app'));
+        
+        ////////////////////////////////////// Lex for POst processing
+var lex = {};
+(function () {
+  const _itemText = 0;
+        const _itemLfCr = 1;
+      
+  lex.procPost = function (post) {
+          let l = lex.lexCtor("Text lex", post)
+        let rr = ""
+    while (1) {
+          let item = l.nextItem()
+      if (!item) {
+        break
         }
-        _lexer.state = null
-        return _item;
-      }else{
+        console.log("type %s, val %s", item.typ, item.val)
+      if (item.typ == _itemLfCr) {
+          rr += "<br />"
+        } else if (item.typ === _itemText) {
+          rr += item.val
+        }
+        if (l.state === null) {
+        break
+        }
+      }
+      return rr
+    }
+  
+  lex.lexCtor = function (name, input) {
+    var _lexer = {
+          name: name,
+        input: input,
+        state: null,
+        items: [],
+        start: 0,
+        pos: 0,
+      };
+  
+    _lexer.nextItem = function () {
+      if (_lexer.items.length === 0) {
+        var _item = {
+          typ: _itemText,
+        val: _lexer.input
+      }
+      _lexer.state = null
+      return _item;
+      } else {
         return _lexer.items.pop();
       }
     }
 
-    _lexer.emit = function(item){
-      _lexer.items.push(item)
-    }
+    _lexer.emit = function (item) {
+          _lexer.items.push(item)
+        }
 
-    _lexer.lexText = function() {
-      while(1) {
+        _lexer.lexText = function () {
+      while (1) {
         if (_lexer.next() === null) {
           break
         }
       }
       if (_lexer.pos > _lexer.start) {
-        _lexer.emit(itemText)
+          _lexer.emit(itemText)
+        }
+        return null
       }
-      return null
+  
+      _lexer.state = _lexer.lexText
+  
+      return _lexer
     }
-
-    _lexer.state = _lexer.lexText
-
-    return _lexer
-  }
 })();
