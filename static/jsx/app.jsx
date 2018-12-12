@@ -221,7 +221,7 @@ class Commander extends React.Component {
     var url = 'do?' + ser
     console.log('POST to ', url)
     $.post(url, res => {
-      //console.log('Res is:', res)
+      console.log('Res is:', res)
       var pp = JSON.parse(res)
       this.setNewState({ ispost: true, posts: pp.Posts, lblreq: " ricerca di ", req: search })
       history.pushState(this.state, `${url}`, `./#${url}`)

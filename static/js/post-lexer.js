@@ -1,5 +1,5 @@
-const passPhrase = "ciao a tutti, come va?!\rMa mi sbaglio ho si voleva fare un' apero?   \r\r Surf World Cup dal 1.-4.05 Podersdorf \rChi fosse interessato a biglietti gratuiti mi faccia sapere.\r\ra presto"
-
+//const passPhrase = "ciao a tutti, come va?!\rMa mi sbaglio ho si voleva fare un' apero?   \r\r Surf World Cup dal 1.-4.05 Podersdorf \rChi fosse interessato a biglietti gratuiti mi faccia sapere.\r\ra presto"
+const passPhrase = "Josè lumas De Oliveira, mai sentito(sul fmaigerato google ho trovato questo oltre l'imagine di un vecchietto:[\"http://www.jornalprimeirahora.com.br/imagens/noticias/luma_21_05_08.jpg\":http://www.jornalprimeirahora.com.br/imagens/noticias/luma_21_05_08.jpg])\rOra però hai stuzzicato la curiosità cho è costui? \r\rJavier Bardem è lui ---\u003e [\"http://www.contactmusic.com/pics/m/oscars_pressroom_240208/javier_bardem_5095236.jpg\":http://www.contactmusic.com/pics/m/oscars_pressroom_240208/javier_bardem_5095236.jpg] ultimo premio oscar come miglior attore maschile \r\rAhhh questo terrence qua: [\"http://lh5.ggpht.com/_YTsfWmtb6gY/SJMD9qzvYKI/AAAAAAAAAKk/YjN5o3Amsps/candy+e+terence4.jpg\":http://lh5.ggpht.com/_YTsfWmtb6gY/SJMD9qzvYKI/AAAAAAAAAKk/YjN5o3Amsps/candy+e+terence4.jpg] sorry nna vevo letto bene... \r\rma ribatto ke a me candy candy annoiava  era + poteten si qualsiasi altro sonnifero!\r\rL'opera magari un'altra volta!"
 
 const lex = {};
 (function () {
@@ -67,7 +67,7 @@ const lex = {};
       return item
     }
 
-    _lexer.nextFn = function () {
+    _lexer.next = function () {
       _lexer.pos += 1
       return _lexer.pos >= _lexer.input.length ? null : _lexer.pos
     }
@@ -86,7 +86,7 @@ const lex = {};
           fnCbTyp(tokType_Text)
           return _lexer.stCrLf // next state
         }
-        if (_lexer.nextFn() === null) {
+        if (_lexer.next() === null) {
           break
         }
       }
