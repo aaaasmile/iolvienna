@@ -1,13 +1,13 @@
 const passPhrase = "ciao a tutti, come va?!\rMa mi sbaglio ho si voleva fare un' apero?   \r\r Surf World Cup dal 1.-4.05 Podersdorf \rChi fosse interessato a biglietti gratuiti mi faccia sapere.\r\ra presto"
 
 
-var lex = {};
+const lex = {};
 (function () {
   const _itemText = 0;
   const _itemLfCr = 1;
 
   lex.procPost = function (post) {
-    let l = lex.lexCtor("Text lex", post)
+    let l = lex.lexCtor("Post lex", post)
     let rr = ""
     while (1) {
       let item = l.nextItem()
@@ -28,7 +28,7 @@ var lex = {};
   }
 
   lex.lexCtor = function (name, input) {
-    var _lexer = {
+    const _lexer = {
       name: name,
       input: input,
       state: null,
@@ -39,7 +39,7 @@ var lex = {};
 
     _lexer.nextItem = function () {
       if (_lexer.items.length === 0) {
-        var _item = {
+        let _item = {
           typ: _itemText,
           val: _lexer.input
         }
@@ -72,4 +72,5 @@ var lex = {};
   }
 })();
 
+//console.log(_itemText)
 console.log('Process post: ', lex.procPost(passPhrase))
