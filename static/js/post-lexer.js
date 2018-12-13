@@ -42,41 +42,38 @@ const lex = {};
   lex.procPost = function (post) {
     let l = lex.lexCtor("Post lex", post)
     let rr = ""
-    let exit = false
     let link = ""
     let label = ""
     while (1) {
       let item = l.nextItem()
-      if (!item) {
-        break
-      }
-      console.log("%d %s val: %s (%s)", item.typ, lex.debugType(item.typ), item.val, lex.hexEncode(item.val))
-      switch (item.typ) {
-        case tokType_LfCr:
-          rr += "<br />"
-          break
-        case tokType_Text:
-          rr += item.val
-          break
-        case tokType_UrlLabel:
-          label = item.val
-          break
-        case tokType_UrlLink:
-          link = item.val
-          break
-        default:
-          exit = true
-          break
-      }
-      if ((item.typ === tokType_UrlLabel) || (item.typ === tokType_UrlLink)) {
-        if ((label !== '') && (link !== '')) {
-          rr += `<a href=${link}>${label}</a>`
-          link = ''
-          label = ''
+      if (item) {
+        console.log("%d %s val: %s (%s)", item.typ, lex.debugType(item.typ), item.val, lex.hexEncode(item.val))
+        switch (item.typ) {
+          case tokType_LfCr:
+            rr += "<br />"
+            break
+          case tokType_Text:
+            rr += item.val
+            break
+          case tokType_UrlLabel:
+            label = item.val
+            break
+          case tokType_UrlLink:
+            link = item.val
+            break
+          default:
+            break
+        }
+        if ((item.typ === tokType_UrlLabel) || (item.typ === tokType_UrlLink)) {
+          if ((label !== '') && (link !== '')) {
+            rr += `<a href=${link}>${label}</a>`
+            link = ''
+            label = ''
+          }
         }
       }
 
-      if ((l.state === null) || exit) {
+      if (l.state === null) {
         break
       }
     }
@@ -154,15 +151,31 @@ const lex = {};
       return _lexer.stText
     }
 
+    _lexer.stBraLeftLinkInStr = function (fnCbTyp) {
+      if (_lexer.next() === null) {
+        return null
+      }
+      _lexer.ignore()
+      while (1) {
+        if (_lexer.input[_lexer.pos] === '"') {
+          fnCbTyp(tokType_UrlLink)
+          return _lexer.stBraLeftLabel
+        }
+        if (_lexer.next() === null) {
+          return null
+        }
+      }
+      return _lexer.stText
+    }
+
     _lexer.stBraLeftLink = function (fnCbTyp) {
       if (_lexer.next() === null) {
         return null
       }
       _lexer.ignore()
       while (1) {
-        if (_lexer.input[_lexer.pos] === ':') {
-          fnCbTyp(tokType_UrlLink)
-          return _lexer.stBraLeftLabel
+        if (_lexer.input[_lexer.pos] === '"') {
+          return _lexer.stBraLeftLinkInStr
         }
         if (_lexer.next() === null) {
           return null
