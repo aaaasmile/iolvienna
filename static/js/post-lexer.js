@@ -2,7 +2,7 @@
 //const passPhrase = "Josè lumas De Oliveira, mai sentito(sul fmaigerato google ho trovato questo oltre l'imagine di un vecchietto:[\"http://www.jornalprimeirahora.com.br/imagens/noticias/luma_21_05_08.jpg\":http://www.jornalprimeirahora.com.br/imagens/noticias/luma_21_05_08.jpg])\rOra però hai stuzzicato la curiosità cho è costui? \r\rJavier Bardem è lui ---\u003e [\"http://www.contactmusic.com/pics/m/oscars_pressroom_240208/javier_bardem_5095236.jpg\":http://www.contactmusic.com/pics/m/oscars_pressroom_240208/javier_bardem_5095236.jpg] ultimo premio oscar come miglior attore maschile \r\rAhhh questo terrence qua: [\"http://lh5.ggpht.com/_YTsfWmtb6gY/SJMD9qzvYKI/AAAAAAAAAKk/YjN5o3Amsps/candy+e+terence4.jpg\":http://lh5.ggpht.com/_YTsfWmtb6gY/SJMD9qzvYKI/AAAAAAAAAKk/YjN5o3Amsps/candy+e+terence4.jpg] sorry nna vevo letto bene... \r\rma ribatto ke a me candy candy annoiava  era + poteten si qualsiasi altro sonnifero!\r\rL'opera magari un'altra volta!"
 //const passPhrase = "a\rb"
 //const passPhrase = "\rbaba\r"
-const passPhrase = "lo[\"ciao\":htpp]fine"
+const passPhrase = "lo[\"ciao\":htpp://invido.it]fine"
 
 const lex = {};
 (function () {
@@ -66,7 +66,7 @@ const lex = {};
         }
         if ((item.typ === tokType_UrlLabel) || (item.typ === tokType_UrlLink)) {
           if ((label !== '') && (link !== '')) {
-            rr += `<a href=${link}>${label}</a>`
+            rr += `<a href="${link}">${label}</a>`
             link = ''
             label = ''
           }
@@ -135,13 +135,25 @@ const lex = {};
     }
 
     _lexer.stBraLeftLabel = function (fnCbTyp) {
-      if (_lexer.next() === null) {
+      let rune = _lexer.next()
+      if (!rune) {
         return null
       }
       _lexer.ignore()
+      
+      if (rune === ":") {
+        if (_lexer.next() === null) {
+          return null
+        }
+        _lexer.ignore()
+      }
       while (1) {
         if (_lexer.input[_lexer.pos] === ']') {
           fnCbTyp(tokType_UrlLabel)
+          if (_lexer.next() === null) {
+            return null
+          }
+          _lexer.ignore()
           return _lexer.stText
         }
         if (_lexer.next() === null) {
