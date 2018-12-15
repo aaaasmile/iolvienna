@@ -106,14 +106,18 @@ class Commander extends React.Component {
         this.usersReq();
         break;
 
+      case "id":
+        console.log("Request id on:", arg);
+        this.reqId(arg);
+        break;
+
       case "data":
         console.log('Date post request');
         let ddreq = this.makeDateForReq(arg, err => {
           console.log('Parse error:', err);
           this.setNewState({
             error: err
-          });
-          history.pushState(this.state, `err`, `./#err`);
+          }); // no history on error
         });
 
         if (ddreq) {
@@ -233,6 +237,25 @@ class Commander extends React.Component {
     });
   }
 
+  reqId(arg) {
+    var ser;
+    ser = $.param({
+      "postid": arg
+    });
+    var url = 'do?' + ser;
+    console.log('POST to ', url);
+    $.post(url, res => {
+      console.log('Res is:', res);
+      var pp = JSON.parse(res);
+      this.setNewStateHist({
+        ispost: true,
+        posts: pp.Posts,
+        lblreq: "comando ",
+        req: ":id " + arg
+      }, `${url}`, `./#${url}`);
+    });
+  }
+
   usersReq() {
     let ser = $.param({
       "users": "all"
@@ -240,7 +263,7 @@ class Commander extends React.Component {
     var url = 'do?' + ser;
     console.log('POST to ', url);
     $.post(url, res => {
-      console.log('Res is:', res);
+      //console.log('Res is:', res)
       var pp = JSON.parse(res);
       this.setNewState({
         isuser: true,
@@ -474,7 +497,7 @@ class Help extends React.Component {
       className: "ui message"
     }, React.createElement("div", {
       className: "header"
-    }, "Aiuto"), React.createElement("div", null, "I comandi che si possono utilizzare sono sempre prefissati dai due punti:", React.createElement("ul", null, React.createElement("li", null, React.createElement("b", null, ":aiuto"), React.createElement("br", null), "mostra questa schermata"), React.createElement("li", null, React.createElement("b", null, ":?"), React.createElement("br", null), "mostra questa schermata"), React.createElement("li", null, React.createElement("b", null, ":data"), " ", React.createElement("i", null, "segue una data in formato gg/mm/aaaa."), " ", React.createElement("br", null), "Per esempio, per vedere i post del 27 gennaio 2003 si usa:", React.createElement("br", null), ":data 27/01/2003", React.createElement("br", null), "Va bene anche il formato a 6 caratteri senza separatore:", React.createElement("br", null), ":data 270103"), React.createElement("li", null, React.createElement("b", null, ":clr"), React.createElement("br", null), "cancella il risultato"), React.createElement("li", null, React.createElement("b", null, ":utenti"), React.createElement("br", null), "mostra l'elenco delgi utenti che hanno scritto messaggi"), React.createElement("li", null, React.createElement("b", null, ":u"), React.createElement("br", null), "mostra l'elenco delgi utenti che hanno scritto messaggi"), React.createElement("li", null, React.createElement("b", null, ":caso"), React.createElement("br", null), React.createElement("i", null, "seguito dal nome di utente"), React.createElement("br", null), "Ritorna dei post casuali relativi as un utente ", React.createElement("br", null), React.createElement("i", null, "senza nulla"), React.createElement("br", null), "Ritorna dei post casuali"), React.createElement("li", null, React.createElement("i", null, "Parola o frase che non sia un comando"), React.createElement("br", null), "Esegue una ricerca all'interno di tutti posts e ne presenta un risultato limitato.")), "Nei lista dei post \xE8 possibile selezionarne uno cliccando sulla data. Da questo punto si segue lo stream dei messaggi."))) : null);
+    }, "Aiuto"), React.createElement("div", null, "I comandi che si possono utilizzare sono sempre prefissati dai due punti:", React.createElement("ul", null, React.createElement("li", null, React.createElement("b", null, ":aiuto"), React.createElement("br", null), "mostra questa schermata"), React.createElement("li", null, React.createElement("b", null, ":?"), React.createElement("br", null), "mostra questa schermata"), React.createElement("li", null, React.createElement("b", null, ":data"), " ", React.createElement("i", null, "segue una data in formato gg/mm/aaaa."), " ", React.createElement("br", null), "Per esempio, per vedere i post del 27 gennaio 2003 si usa:", React.createElement("br", null), ":data 27/01/2003", React.createElement("br", null), "Va bene anche il formato a 6 caratteri senza separatore:", React.createElement("br", null), ":data 270103"), React.createElement("li", null, React.createElement("b", null, ":clr"), React.createElement("br", null), "cancella il risultato"), React.createElement("li", null, React.createElement("b", null, ":utenti"), React.createElement("br", null), "mostra l'elenco delgi utenti che hanno scritto messaggi"), React.createElement("li", null, React.createElement("b", null, ":u"), React.createElement("br", null), "mostra l'elenco delgi utenti che hanno scritto messaggi"), React.createElement("li", null, React.createElement("b", null, ":id"), " ", React.createElement("i", null, "segue un id di un post"), " ", React.createElement("br", null)), React.createElement("li", null, React.createElement("b", null, ":caso"), React.createElement("br", null), React.createElement("i", null, "seguito dal nome di utente"), React.createElement("br", null), "Ritorna dei post casuali relativi as un utente ", React.createElement("br", null), React.createElement("i", null, "senza nulla"), React.createElement("br", null), "Ritorna dei post casuali"), React.createElement("li", null, React.createElement("i", null, "Parola o frase che non sia un comando"), React.createElement("br", null), "Esegue una ricerca all'interno di tutti posts e ne presenta un risultato limitato.")), "Nei lista dei post \xE8 possibile selezionarne uno cliccando sulla data. Da questo punto si segue lo stream dei messaggi."))) : null);
   }
 
 } ///////////////////////////////////////////////////////////////////////////////////
@@ -558,6 +581,12 @@ class Post extends React.Component {
     return gg + '/' + mm + '/' + date.getFullYear() + " " + hh + ":" + min;
   }
 
+  createMarkup() {
+    return {
+      __html: lex.procPost(this.props.post.Content)
+    };
+  }
+
   render() {
     return React.createElement("div", {
       className: "ui postId"
@@ -584,7 +613,7 @@ class Post extends React.Component {
       }
     }, this.formatDate(this.props.post.Date))))), React.createElement("div", {
       className: "text"
-    }, this.props.post.Content)));
+    }, lex.procPost(this.props.post.Content))));
   }
 
 }

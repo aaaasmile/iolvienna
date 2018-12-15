@@ -89,6 +89,9 @@ nel componente come prop. Si può, ma viene considerato un problema di corss scr
 Mi serve un tokenizer per cambiare il formato dei post. Essenzialmente ci sono i \r\n che vanno cambiati con <br \>.
 Poi ci sono i link che sonoin formato [dis:linkhttp] che va trasformato in <a href="..">..</a>
 Si potrebbe provare con moo (https://github.com/no-context/moo) oppure scrivere un lexer di nuovo come ho fatto in go.
+Il lexer l'ho creato manualmente sulla falsa riga di quello creato in go.
+Da notare che non si può cambiare semplicemente \r in <br /> in quanto react scrive la stringa in piano
+senza convertirla in html. Per avere l'elemnto in html, si usa React.createElement.
 
 == TODO
 - invece dei bottoni avanti e indietro, usare lo scroll
