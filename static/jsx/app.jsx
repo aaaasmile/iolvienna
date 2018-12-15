@@ -233,7 +233,7 @@ class Commander extends React.Component {
     var url = 'do?' + ser
     console.log('POST to ', url)
     $.post(url, res => {
-      //console.log('Res is:', res)
+      console.log('Res is:', res)
       var pp = JSON.parse(res)
       this.setNewState({ ispost: true, posts: pp.Posts, lblreq: "data = ", req: this.formatDate(date) })
       history.pushState(this.state, `${url}`, `./#${url}`)
@@ -521,6 +521,10 @@ class Post extends React.Component {
     return gg + '/' + mm + '/' + date.getFullYear() + " " + hh + ":" + min
   }
 
+  createMarkup(){
+    return {__html: lex.procPost(this.props.post.Content)};
+  }
+
   render() {
     return (
       <div className="ui postId">
@@ -539,8 +543,9 @@ class Post extends React.Component {
             </div>
           </div>
           <div className="text">
-            {/* {lex.procPost(this.props.post.Content)} */}
-            {this.props.post.Content}
+          {/* <div className="text" dangerouslySetInnerHTML={this.createMarkup()}> */}
+             {lex.procPost(this.props.post.Content)}
+            {/* {this.props.post.Content} */}
           </div>
         </div>
       </div>
