@@ -17,7 +17,7 @@ var (
 )
 
 const (
-	pageSize = 10
+	pageSize = 30
 )
 
 func OpenDatabase() {
@@ -204,6 +204,7 @@ func MatchText(textMatch string) (*idl.IolPostResp, error) {
 		}
 		ids = append(ids, rowid)
 	}
+	log.Printf("Found %d posts", len(ids))
 	if len(ids) > 0 {
 		//log.Printf("Found ids: %v (len %d)", ids, len(ids))
 		shuffle(ids)

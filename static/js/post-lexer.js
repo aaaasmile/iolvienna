@@ -39,10 +39,10 @@ const lex = {};
     return "typ is unknown"
   }
 
-  function traverseTree(tree){
-    console.log('Traverse tree')
-    res = tree.map((val, ix) =>{
-      let pp = Object.assign(val.prop, {key: ix})
+  function traverseTree(tree) {
+    //console.log('Traverse tree')
+    res = tree.map((val, ix) => {
+      let pp = Object.assign(val.prop, { key: ix })
       return React.createElement(val.tag, pp, val.children)
     })
     return res
@@ -60,12 +60,10 @@ const lex = {};
         //console.log("%d %s val: %s (%s)", item.typ, lex.debugType(item.typ), item.val, lex.hexEncode(item.val))
         switch (item.typ) {
           case tokType_LfCr:
-            //rr += "<br />"
-            rr.push({tag:'br', prop: {}, children: null})
+            rr.push({ tag: 'br', prop: {}, children: null })
             break
           case tokType_Text:
-            //rr += item.val
-            rr.push({tag:'div', prop: {}, children: item.val})
+            rr.push({ tag: 'div', prop: {}, children: item.val })
             break
           case tokType_UrlLabel:
             label = item.val
@@ -78,8 +76,7 @@ const lex = {};
         }
         if ((item.typ === tokType_UrlLabel) || (item.typ === tokType_UrlLink)) {
           if ((label !== '') && (link !== '')) {
-            //rr += `<a href="${link}">${label}</a>`
-            rr.push({tag:'a', prop: {href: link}, children: label})
+            rr.push({ tag: 'a', prop: { href: link, target: "_blank" }, children: label })
             link = ''
             label = ''
           }
@@ -90,13 +87,12 @@ const lex = {};
         break
       }
       i += 1
-      if (i > 1000){
+      if (i > 1000) {
         console.error('Parser error')
-        return React.createElement("div",null,post)
+        return React.createElement("div", null, post)
       }
     }
-    return React.createElement("div",null,traverseTree(rr))
-    //return React.createElement("div",null,post)
+    return React.createElement("div", null, traverseTree(rr))
   }
 
   lex.lexCtor = function (name, input) {
