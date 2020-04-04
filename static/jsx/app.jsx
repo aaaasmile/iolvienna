@@ -34,10 +34,67 @@ class Commander extends React.Component {
     this.state = {
       posts: []
     };
+
     this.requestPostsOnDate = this.requestPostsOnDate.bind(this)
     this.parseRequest = this.parseRequest.bind(this)
     this.randomPostReq = this.randomPostReq.bind(this)
     this.restoreOnHistory()
+
+    let params = document.location.hash
+    console.log('Commander created: ', params)
+    let aa = this.parse_query_string(params);
+    let that = this
+    for (let key in aa) {
+      if (!aa.hasOwnProperty(key)) continue;
+      let req = ":" + that.convKeyToCommand(key) + that.getkeyToCmdArg(key, aa[key])
+      console.log('Request:', req)
+      this.parseRequest(req)
+      break;
+    }
+  }
+
+  getkeyToCmdArg(k, v) {
+    if (k === "rnd" && v === 'all') {
+      return ''
+    }
+    return ' ' + decodeURIComponent(v)
+  }
+
+
+  convKeyToCommand(key) {
+    switch (key) {
+      case 'rnd':
+        return 'caso'
+      case 'rndonuser':
+        return 'caso'
+    }
+    return key
+  }
+
+  parse_query_string(query_full) {
+    query_full = decodeURIComponent(query_full)
+    console.log(query_full)
+    let aa = query_full.split('?')
+    if (aa.length !== 2) {
+      return {}
+    }
+    let query = aa[1]
+    let vars = query.split("&");
+    let query_string = {};
+    for (let i = 0; i < vars.length; i++) {
+      var pair = vars[i].split("=");
+      var key = decodeURIComponent(pair[0]);
+      var value = decodeURIComponent(pair[1]);
+      if (typeof query_string[key] === "undefined") {
+        query_string[key] = decodeURIComponent(value);
+      } else if (typeof query_string[key] === "string") {
+        var arr = [query_string[key], decodeURIComponent(value)];
+        query_string[key] = arr;
+      } else {
+        query_string[key].push(decodeURIComponent(value));
+      }
+    }
+    return query_string;
   }
 
   restoreOnHistory() {
@@ -104,6 +161,14 @@ class Commander extends React.Component {
         })
         if (ddreq) {
           this.requestPostsOnDate(ddreq)
+        }
+        break
+      case "datemore":
+      case "dateless":
+      case "date":
+        console.log('Date post request')
+        if (arg) {
+          this.requestPostsOnDate(arg)
         }
         break
       default:
@@ -181,7 +246,7 @@ class Commander extends React.Component {
     var url = 'do?' + ser
     console.log('POST to ', url)
     $.post(url, res => {
-      console.log('Res is:', res)
+      //console.log('Res is:', res)
       var pp = JSON.parse(res)
       this.setNewState({ ispost: true, posts: pp.Posts, lblreq: "comando ", req: (":caso " + arg) })
       history.pushState(this.state, `${url}`, `./#${url}`)
@@ -194,7 +259,7 @@ class Commander extends React.Component {
     var url = 'do?' + ser
     console.log('POST to ', url)
     $.post(url, res => {
-      console.log('Res is:', res)
+      //console.log('Res is:', res)
       var pp = JSON.parse(res)
       this.setNewStateHist({ ispost: true, posts: pp.Posts, lblreq: "comando ", req: (":id " + arg) }, `${url}`, `./#${url}`)
     })
@@ -221,7 +286,7 @@ class Commander extends React.Component {
     var url = 'do?' + ser
     console.log('POST to ', url)
     $.post(url, res => {
-      console.log('Res is:', res)
+      //console.log('Res is:', res)
       var pp = JSON.parse(res)
       this.setNewState({ ispost: true, posts: pp.Posts, lblreq: " ricerca di ", req: search })
       history.pushState(this.state, `${url}`, `./#${url}`)
@@ -501,6 +566,7 @@ class Post extends React.Component {
   }
 
   formatDate(dateStr) {
+    console.log('date to format is ', dateStr)
     let date = new Date(dateStr)
     let gg = "" + date.getDate()
     if (gg.length < 2) {
@@ -521,8 +587,8 @@ class Post extends React.Component {
     return gg + '/' + mm + '/' + date.getFullYear() + " " + hh + ":" + min
   }
 
-  createMarkup(){
-    return {__html: lex.procPost(this.props.post.Content)};
+  createMarkup() {
+    return { __html: lex.procPost(this.props.post.Content) };
   }
 
   render() {
@@ -543,8 +609,8 @@ class Post extends React.Component {
             </div>
           </div>
           <div className="text">
-          {/* <div className="text" dangerouslySetInnerHTML={this.createMarkup()}> */}
-             {lex.procPost(this.props.post.Content)}
+            {/* <div className="text" dangerouslySetInnerHTML={this.createMarkup()}> */}
+            {lex.procPost(this.props.post.Content)}
             {/* {this.props.post.Content} */}
           </div>
         </div>
