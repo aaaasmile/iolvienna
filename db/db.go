@@ -17,7 +17,7 @@ var (
 )
 
 const (
-	pageSize = 30
+	pageSize = 10
 )
 
 func OpenDatabase() {
