@@ -5,6 +5,9 @@ go run --tags "fts5" .\main.go
 e per il build:
 go build --tags "fts5" .\main.go
 
+Per quato riguarda la creazione del database con fts5 vedi la descrizione messa nell'importer:
+https://github.com/aaaasmile/iol-importer/blob/master/Readme_iol-vienna.txt
+
 == Testa la api del service
 Apri una WLC e lancia:
 curl -X POST http://localhost:5568/iol/do?req=oca
@@ -27,7 +30,7 @@ Che viene usato nella select di prima:
 EXPLAIN QUERY PLAN select date_published,id, post_content from iol_post where date_published > '2003-10-31T15:10:00.000Z' ORDER BY date_published  LIMIT(10) ;
 --SEARCH TABLE iol_post USING COVERING INDEX idx_iolpost_pubdate (date_published>?)
 
-Qeullo che si diceva 10 anni fa:
+Per esempio, per trovare quello che si diceva 10 anni fa:
 select date_published,id from iol_post where date_published > '2008-11-20T00:10:00.000Z' AND date_published < '2008-11-20T23:59:00.000Z' ORDER BY date_published  LIMIT(100) ;
 
 == Errori
