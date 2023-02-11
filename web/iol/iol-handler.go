@@ -9,9 +9,9 @@ import (
 	"strings"
 	"text/template"
 
-	"../../conf"
-	"../../db"
-	"../idl"
+	"github.com/aaaasmile/iolvienna/conf"
+	"github.com/aaaasmile/iolvienna/db"
+	"github.com/aaaasmile/iolvienna/web/idl"
 )
 
 func checkDoRquest(reqURI string) bool {

@@ -8,7 +8,7 @@ import (
 	"math/rand"
 	"time"
 
-	"../web/idl"
+	"github.com/aaaasmile/iolvienna/web/idl"
 	_ "github.com/mattn/go-sqlite3"
 )
 

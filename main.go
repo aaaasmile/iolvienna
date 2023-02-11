@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"./web"
-	"./web/idl"
+	"github.com/aaaasmile/iolvienna/web"
+	"github.com/aaaasmile/iolvienna/web/idl"
 )
 
 func main() {

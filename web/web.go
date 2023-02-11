@@ -11,9 +11,9 @@ import (
 
 	"time"
 
-	"../conf"
-	"../db"
-	"./iol"
+	"github.com/aaaasmile/iolvienna/conf"
+	"github.com/aaaasmile/iolvienna/db"
+	"github.com/aaaasmile/iolvienna/web/iol"
 )
 
 func RunService(configfile string) {
